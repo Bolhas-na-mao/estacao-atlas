@@ -25,9 +25,9 @@ func (g *Game) Update() error {
 	return nil
 }
 
-func DrawGrid(screen *ebiten.Image) {
-	availWidth := SCREEN_WIDTH - (PADDING * 2)
-	availHeight := SCREEN_HEIGHT - (PADDING * 2)
+func (g *Game) DrawGrid(screen *ebiten.Image) {
+	availWidth := g.screenWidth - (PADDING * 2)
+	availHeight := g.screenHeight - (PADDING * 2)
 
 	cols := availWidth / SQUARE_WIDTH
 	rows := availHeight / SQUARE_WIDTH
@@ -35,8 +35,8 @@ func DrawGrid(screen *ebiten.Image) {
 	totalGridWidth := cols * SQUARE_WIDTH
 	totalGridHeight := rows * SQUARE_WIDTH
 
-	startX := (SCREEN_WIDTH - totalGridWidth) / 2
-	startY := (SCREEN_HEIGHT - totalGridHeight) / 2
+	startX := (g.screenWidth - totalGridWidth) / 2
+	startY := (g.screenHeight - totalGridHeight) / 2
 
 	for i := 0; i < cols; i++ {
 		for j := 0; j < rows; j++ {
@@ -59,7 +59,8 @@ func DrawGrid(screen *ebiten.Image) {
 func (g *Game) Draw(screen *ebiten.Image) {
 
 	screen.Fill(color.RGBA{228, 228, 228, 255})
-	DrawGrid(screen)
+
+	g.DrawGrid(screen)
 
 	if g.img != nil {
 		w, _ := g.img.Bounds().Dx(), g.img.Bounds().Dy()
