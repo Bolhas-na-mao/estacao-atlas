@@ -5,10 +5,13 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-type Game struct{}
+type Game struct {
+	img *ebiten.Image
+}
 
 const SCREEN_WIDTH = 720
 const SCREEN_HEIGHT = 480
@@ -54,6 +57,19 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	screen.Fill(color.RGBA{228, 228, 228, 255})
 	DrawGrid(screen)
+
+	if g.img != nil {
+		w, h := g.img.Bounds().Dx(), g.img.Bounds().Dy()
+
+		op := &ebiten.DrawImageOptions{}
+
+		x := float64(SCREEN_WIDTH-w) / 2
+		y := float64(SCREEN_HEIGHT-h) / 2
+
+		op.GeoM.Translate(x, y)
+
+		screen.DrawImage(g.img, op)
+	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -61,9 +77,18 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 }
 
 func main() {
+	g := &Game{}
+
+	var err error
+	g.img, _, err = ebitenutil.NewImageFromFile("assets/atlas_logo.png")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	ebiten.SetWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT)
 	ebiten.SetWindowTitle("Estação Atlas")
-	if err := ebiten.RunGame(&Game{}); err != nil {
+	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}
 }
