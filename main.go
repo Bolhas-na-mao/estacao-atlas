@@ -63,8 +63,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 		op := &ebiten.DrawImageOptions{}
 
-		x := float64(SCREEN_WIDTH-w) / 2
-		y := float64(SCREEN_HEIGHT-h) / 2
+		scale := 0.5
+		op.GeoM.Scale(scale, scale)
+
+		x := (float64(SCREEN_WIDTH) - (float64(w) * scale)) / 2
+		y := (float64(SCREEN_HEIGHT) - (float64(h) * scale)) / 2
 
 		op.GeoM.Translate(x, y)
 
