@@ -8,6 +8,11 @@ import (
 )
 
 func DrawGrid(color color.RGBA, screen *ebiten.Image, screenWidth, screenHeight, padding, cellSize int) {
+
+	if cellSize <= 0 || padding < 0 {
+		return
+	}
+
 	availWidth := screenWidth - (padding * 2)
 	availHeight := screenHeight - (padding * 2)
 
