@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
@@ -39,8 +38,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	screen.Fill(color.RGBA{228, 228, 228, 255})
 	DrawGrid(screen)
-
-	ebitenutil.DebugPrint(screen, "Estação Atlas")
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
