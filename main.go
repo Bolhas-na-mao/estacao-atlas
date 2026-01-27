@@ -59,15 +59,15 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	DrawGrid(screen)
 
 	if g.img != nil {
-		w, h := g.img.Bounds().Dx(), g.img.Bounds().Dy()
+		w, _ := g.img.Bounds().Dx(), g.img.Bounds().Dy()
 
 		op := &ebiten.DrawImageOptions{}
 
-		scale := 0.5
+		scale := 0.35
 		op.GeoM.Scale(scale, scale)
 
 		x := (float64(SCREEN_WIDTH) - (float64(w) * scale)) / 2
-		y := (float64(SCREEN_HEIGHT) - (float64(h) * scale)) / 2
+		y := float64(SCREEN_HEIGHT) / 100
 
 		op.GeoM.Translate(x, y)
 
