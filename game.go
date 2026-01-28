@@ -79,6 +79,7 @@ func NewGame() *Game {
 
 	return &Game{
 		img:          img,
+		state:        StateMenu,
 		screenWidth:  SCREEN_WIDTH,
 		screenHeight: SCREEN_HEIGHT,
 	}
