@@ -9,8 +9,15 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+type GameState int
+
+const (
+	StateMenu GameState = iota
+)
+
 type Game struct {
 	img          *ebiten.Image
+	state        GameState
 	screenWidth  int
 	screenHeight int
 }
@@ -25,8 +32,7 @@ func (g *Game) Update() error {
 	return nil
 }
 
-func (g *Game) Draw(screen *ebiten.Image) {
-
+func (g *Game) drawMenu(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{228, 228, 228, 255})
 
 	ui.DrawGrid(color.RGBA{217, 218, 224, 255}, screen, g.screenWidth, g.screenHeight, PADDING, CELL_SIZE)
@@ -45,6 +51,15 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		op.GeoM.Translate(x, y)
 
 		screen.DrawImage(g.img, op)
+	}
+}
+
+func (g *Game) Draw(screen *ebiten.Image) {
+	switch g.state {
+	case StateMenu:
+		g.drawMenu(screen)
+	default:
+		g.drawMenu(screen)
 	}
 }
 
