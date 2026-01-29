@@ -22,8 +22,8 @@ type Game struct {
 	screenHeight int
 }
 
-const SCREEN_WIDTH = 720
-const SCREEN_HEIGHT = 480
+const SCREEN_WIDTH = 1280
+const SCREEN_HEIGHT = 720
 const CELL_SIZE = 30
 const PADDING = 10
 const LOGO_PATH = "assets/atlas_logo.png"
@@ -45,8 +45,8 @@ func (g *Game) drawMenu(screen *ebiten.Image) {
 		scale := 0.35
 		op.GeoM.Scale(scale, scale)
 
-		x := (float64(SCREEN_WIDTH) - (float64(w) * scale)) / 2
-		y := float64(SCREEN_HEIGHT) / 100
+		x := (float64(g.screenWidth) - (float64(w) * scale)) / 2
+		y := float64(g.screenHeight) / 100
 
 		op.GeoM.Translate(x, y)
 
@@ -79,6 +79,7 @@ func NewGame() *Game {
 
 	return &Game{
 		img:          img,
+		state:        StateMenu,
 		screenWidth:  SCREEN_WIDTH,
 		screenHeight: SCREEN_HEIGHT,
 	}
