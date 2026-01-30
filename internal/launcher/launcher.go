@@ -4,6 +4,7 @@ import (
 	"image/color"
 	"log"
 
+	"github.com/Bolhas-na-mao/estacao-atlas/internal/games"
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/ui"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -18,7 +19,7 @@ const (
 
 type Launcher struct {
 	img          *ebiten.Image
-	games        []string
+	games        []games.Game
 	state        LauncherState
 	screenWidth  int
 	screenHeight int
@@ -73,17 +74,13 @@ func (l *Launcher) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return l.GetArea()
 }
 
-func getGames() []string {
-	return []string{"O Silêncio de Lexis"}
-}
-
 func NewLauncher() *Launcher {
 	img, _, err := ebitenutil.NewImageFromFile(LOGO_PATH)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	games := getGames()
+	games := games.ListGames()
 
 	return &Launcher{
 		img:          img,
