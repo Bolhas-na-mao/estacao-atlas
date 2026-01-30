@@ -39,7 +39,11 @@ const LAUNCHER_TITLE = "Estação Atlas"
 func (l *Launcher) Update() error {
 
 	if l.state == StatePlaying {
-		return games.UpdateCurrentGame()
+		if err := games.UpdateCurrentGame(); err != nil {
+			log.Printf("update failed: %v", err)
+			l.state = StateMenu
+		}
+		return nil
 	}
 
 	if l.state == StateMenu {
@@ -49,7 +53,10 @@ func (l *Launcher) Update() error {
 			if btn.Update() {
 				selectedGame := availableGames[i]
 
-				games.SetCurrentGame(selectedGame.ID)
+				if _, err := games.SetCurrentGame(selectedGame.ID); err != nil {
+					log.Printf("failed to select game %s: %v", selectedGame.ID, err)
+					continue
+				}
 
 				l.state = StatePlaying
 			}
