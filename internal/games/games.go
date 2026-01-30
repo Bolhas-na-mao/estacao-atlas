@@ -29,10 +29,10 @@ func GetCurrentGame() *Game {
 }
 
 func SetCurrentGame(id string) (*Game, error) {
-	for _, g := range games {
+	for i, g := range games {
 		if g.ID == id {
-			currentGame = &g
-			return &g, nil
+			currentGame = &games[i]
+			return &games[i], nil
 		}
 	}
 	return nil, errors.New("game not found")
