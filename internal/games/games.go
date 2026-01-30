@@ -42,7 +42,7 @@ func PlayCurrentGame(screen *ebiten.Image) error {
 	game := GetCurrentGame()
 
 	if game == nil {
-		return nil
+		return errors.New("no game selected")
 	}
 
 	err := game.Run(screen)

@@ -62,9 +62,18 @@ func (l *Launcher) Draw(screen *ebiten.Image) {
 	case StateMenu:
 		l.drawMenu(screen)
 	case StatePlaying:
-		games.PlayCurrentGame(screen)
+		l.Play(screen)
 
 	default:
+		l.drawMenu(screen)
+	}
+}
+
+func (l *Launcher) Play(screen *ebiten.Image) {
+
+	err := games.PlayCurrentGame(screen)
+
+	if err != nil {
 		l.drawMenu(screen)
 	}
 }
