@@ -28,7 +28,7 @@ const SCREEN_WIDTH = 1280
 const SCREEN_HEIGHT = 720
 const CELL_SIZE = 30
 const PADDING = 10
-const LOGO_PATH = "assets/atlas_logo.png"
+const LOGO_PATH = "internal/launcher/assets/atlas_logo.png"
 const LAUNCHER_TITLE = "Estação Atlas"
 
 func (l *Launcher) Update() error {
