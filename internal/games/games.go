@@ -2,8 +2,8 @@ package games
 
 import (
 	"errors"
-	"image/color"
 
+	"github.com/Bolhas-na-mao/estacao-atlas/internal/games/lexis"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -13,14 +13,8 @@ type Game struct {
 	Run  func(screen *ebiten.Image) error
 }
 
-func RunLexis(screen *ebiten.Image) error {
-	screen.Fill(color.RGBA{0, 0, 0, 255})
-
-	return nil
-}
-
 var games = []Game{
-	{ID: "lexis", Name: "O Silêncio de Lexis", Run: RunLexis},
+	{ID: "lexis", Name: "O Silêncio de Lexis", Run: lexis.Run},
 }
 
 var currentGame *Game
