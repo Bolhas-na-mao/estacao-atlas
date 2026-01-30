@@ -13,10 +13,12 @@ type LauncherState int
 
 const (
 	StateMenu LauncherState = iota
+	StatePlaying
 )
 
 type Launcher struct {
 	img          *ebiten.Image
+	games        []string
 	state        LauncherState
 	screenWidth  int
 	screenHeight int
