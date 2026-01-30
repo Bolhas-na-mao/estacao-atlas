@@ -1,14 +1,26 @@
 package games
 
-import "errors"
+import (
+	"errors"
+	"image/color"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type Game struct {
 	ID   string
 	Name string
+	Run  func(screen *ebiten.Image) error
+}
+
+func RunLexis(screen *ebiten.Image) error {
+	screen.Fill(color.RGBA{0, 0, 0, 255})
+
+	return nil
 }
 
 var games = []Game{
-	{ID: "lexis", Name: "O Silêncio de Lexis"},
+	{ID: "lexis", Name: "O Silêncio de Lexis", Run: RunLexis},
 }
 
 var currentGame *Game
@@ -29,4 +41,12 @@ func SetCurrentGame(id string) (*Game, error) {
 		}
 	}
 	return nil, errors.New("game not found")
+}
+
+func PlayCurrentGame(screen *ebiten.Image) error {
+	game := GetCurrentGame()
+
+	err := game.Run(screen)
+
+	return err
 }

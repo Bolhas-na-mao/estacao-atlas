@@ -4,6 +4,7 @@ import (
 	"image/color"
 	"log"
 
+	"github.com/Bolhas-na-mao/estacao-atlas/internal/games"
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/ui"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -60,6 +61,9 @@ func (l *Launcher) Draw(screen *ebiten.Image) {
 	switch l.state {
 	case StateMenu:
 		l.drawMenu(screen)
+	case StatePlaying:
+		games.PlayCurrentGame(screen)
+
 	default:
 		l.drawMenu(screen)
 	}
