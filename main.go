@@ -9,14 +9,14 @@ import (
 const LAUNCHER_TITLE = "Estação Atlas"
 
 func main() {
-	game := NewGame()
+	launcher := NewLauncher()
 
-	width, height := game.GetArea()
+	width, height := launcher.GetArea()
 
 	ebiten.SetWindowSize(width, height)
 	ebiten.SetWindowTitle(LAUNCHER_TITLE)
 
-	if err := ebiten.RunGame(game); err != nil {
+	if err := ebiten.RunGame(launcher); err != nil {
 		log.Fatal(err)
 	}
 }

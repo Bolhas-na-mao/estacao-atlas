@@ -73,7 +73,7 @@ func (l *Launcher) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return l.GetArea()
 }
 
-func NewGame() *Launcher {
+func NewLauncher() *Launcher {
 	img, _, err := ebitenutil.NewImageFromFile(LOGO_PATH)
 	if err != nil {
 		log.Fatal(err)
