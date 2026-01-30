@@ -1,4 +1,4 @@
-package main
+package launcher
 
 import (
 	"image/color"
@@ -73,15 +73,22 @@ func (l *Launcher) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return l.GetArea()
 }
 
+func getGames() []string {
+	return []string{"O Silêncio de Lexis"}
+}
+
 func NewLauncher() *Launcher {
 	img, _, err := ebitenutil.NewImageFromFile(LOGO_PATH)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	games := getGames()
+
 	return &Launcher{
 		img:          img,
 		state:        StateMenu,
+		games:        games,
 		screenWidth:  SCREEN_WIDTH,
 		screenHeight: SCREEN_HEIGHT,
 	}

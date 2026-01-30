@@ -3,13 +3,14 @@ package main
 import (
 	"log"
 
+	"github.com/Bolhas-na-mao/estacao-atlas/internal/launcher"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 const LAUNCHER_TITLE = "Estação Atlas"
 
 func main() {
-	launcher := NewLauncher()
+	launcher := launcher.NewLauncher()
 
 	width, height := launcher.GetArea()
 
