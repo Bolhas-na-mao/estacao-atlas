@@ -45,7 +45,13 @@ func UpdateCurrentGame() error {
 		return errors.New("no game selected")
 	}
 
-	game.Update()
+	if game.Update == nil {
+		return errors.New("game has no update handler")
+	}
+
+	if err := game.Update(); err != nil {
+		return err
+	}
 
 	return nil
 }
