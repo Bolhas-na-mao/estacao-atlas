@@ -30,6 +30,7 @@ const SCREEN_HEIGHT = 720
 const CELL_SIZE = 30
 const PADDING = 10
 const LOGO_PATH = "assets/atlas_logo.png"
+const LAUNCHER_TITLE = "Estação Atlas"
 
 func (l *Launcher) Update() error {
 	return nil
@@ -88,5 +89,18 @@ func NewLauncher() *Launcher {
 		games:        games,
 		screenWidth:  SCREEN_WIDTH,
 		screenHeight: SCREEN_HEIGHT,
+	}
+}
+
+func RunLauncher() {
+	launcher := NewLauncher()
+
+	width, height := launcher.GetArea()
+
+	ebiten.SetWindowSize(width, height)
+	ebiten.SetWindowTitle(LAUNCHER_TITLE)
+
+	if err := ebiten.RunGame(launcher); err != nil {
+		log.Fatal(err)
 	}
 }
