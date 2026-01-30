@@ -1,14 +1,18 @@
 package launcher
 
 import (
+	"embed"
 	"image/color"
+	_ "image/png"
 	"log"
 
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/games"
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/ui"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
+
+//go:embed assets/*
+var assets embed.FS
 
 type LauncherState int
 
@@ -29,7 +33,7 @@ const SCREEN_WIDTH = 1280
 const SCREEN_HEIGHT = 720
 const CELL_SIZE = 30
 const PADDING = 10
-const LOGO_PATH = "internal/launcher/assets/atlas_logo.png"
+const LOGO_PATH = "assets/atlas_logo.png"
 const LAUNCHER_TITLE = "Estação Atlas"
 
 func (l *Launcher) Update() error {
@@ -127,13 +131,15 @@ func (l *Launcher) RenderButtons() {
 
 }
 
-func NewLauncher() *Launcher {
-	img, _, err := ebitenutil.NewImageFromFile(LOGO_PATH)
+func NewLauncher() (*Launcher, error) {
+
+	img, err := ui.RenderAsset(assets, LOGO_PATH)
+
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	l := &Launcher{
+	launcher := &Launcher{
 		img:          img,
 		state:        StateMenu,
 		screenWidth:  SCREEN_WIDTH,
@@ -141,13 +147,18 @@ func NewLauncher() *Launcher {
 		gameButtons:  []*ui.Button{},
 	}
 
-	l.RenderButtons()
+	launcher.RenderButtons()
 
-	return l
+	return launcher, nil
 }
 
 func RunLauncher() {
-	launcher := NewLauncher()
+	launcher, err := NewLauncher()
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
 	width, height := launcher.GetArea()
 
