@@ -38,9 +38,13 @@ func SetCurrentGame(id string) (*Game, error) {
 }
 
 func PlayCurrentGame(screen *ebiten.Image) error {
+
 	game := GetCurrentGame()
 
-	err := game.Run(screen)
+	if game == nil {
+		return nil
+	}
 
+	err := game.Run(screen)
 	return err
 }
