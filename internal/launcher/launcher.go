@@ -98,6 +98,7 @@ func RunLauncher() {
 
 	ebiten.SetWindowSize(width, height)
 	ebiten.SetWindowTitle(LAUNCHER_TITLE)
+	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	if err := ebiten.RunGame(launcher); err != nil {
 		log.Fatal(err)
