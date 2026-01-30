@@ -4,7 +4,6 @@ import (
 	"image/color"
 	"log"
 
-	"github.com/Bolhas-na-mao/estacao-atlas/internal/games"
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/ui"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -19,7 +18,6 @@ const (
 
 type Launcher struct {
 	img          *ebiten.Image
-	games        []games.Game
 	state        LauncherState
 	screenWidth  int
 	screenHeight int
@@ -81,12 +79,9 @@ func NewLauncher() *Launcher {
 		log.Fatal(err)
 	}
 
-	games := games.ListGames()
-
 	return &Launcher{
 		img:          img,
 		state:        StateMenu,
-		games:        games,
 		screenWidth:  SCREEN_WIDTH,
 		screenHeight: SCREEN_HEIGHT,
 	}
