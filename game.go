@@ -9,15 +9,15 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
-type GameState int
+type LauncherState int
 
 const (
-	StateMenu GameState = iota
+	StateMenu LauncherState = iota
 )
 
-type Game struct {
+type Launcher struct {
 	img          *ebiten.Image
-	state        GameState
+	state        LauncherState
 	screenWidth  int
 	screenHeight int
 }
@@ -28,56 +28,56 @@ const CELL_SIZE = 30
 const PADDING = 10
 const LOGO_PATH = "assets/atlas_logo.png"
 
-func (g *Game) Update() error {
+func (l *Launcher) Update() error {
 	return nil
 }
 
-func (g *Game) drawMenu(screen *ebiten.Image) {
+func (l *Launcher) drawMenu(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{228, 228, 228, 255})
 
-	ui.DrawGrid(color.RGBA{217, 218, 224, 255}, screen, g.screenWidth, g.screenHeight, PADDING, CELL_SIZE)
+	ui.DrawGrid(color.RGBA{217, 218, 224, 255}, screen, l.screenWidth, l.screenHeight, PADDING, CELL_SIZE)
 
-	if g.img != nil {
-		w, _ := g.img.Bounds().Dx(), g.img.Bounds().Dy()
+	if l.img != nil {
+		w, _ := l.img.Bounds().Dx(), l.img.Bounds().Dy()
 
 		op := &ebiten.DrawImageOptions{}
 
 		scale := 0.35
 		op.GeoM.Scale(scale, scale)
 
-		x := (float64(g.screenWidth) - (float64(w) * scale)) / 2
-		y := float64(g.screenHeight) / 100
+		x := (float64(l.screenWidth) - (float64(w) * scale)) / 2
+		y := float64(l.screenHeight) / 100
 
 		op.GeoM.Translate(x, y)
 
-		screen.DrawImage(g.img, op)
+		screen.DrawImage(l.img, op)
 	}
 }
 
-func (g *Game) Draw(screen *ebiten.Image) {
-	switch g.state {
+func (l *Launcher) Draw(screen *ebiten.Image) {
+	switch l.state {
 	case StateMenu:
-		g.drawMenu(screen)
+		l.drawMenu(screen)
 	default:
-		g.drawMenu(screen)
+		l.drawMenu(screen)
 	}
 }
 
-func (g *Game) GetArea() (int, int) {
-	return g.screenWidth, g.screenHeight
+func (l *Launcher) GetArea() (int, int) {
+	return l.screenWidth, l.screenHeight
 }
 
-func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return g.GetArea()
+func (l *Launcher) Layout(outsideWidth, outsideHeight int) (int, int) {
+	return l.GetArea()
 }
 
-func NewGame() *Game {
+func NewGame() *Launcher {
 	img, _, err := ebitenutil.NewImageFromFile(LOGO_PATH)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return &Game{
+	return &Launcher{
 		img:          img,
 		state:        StateMenu,
 		screenWidth:  SCREEN_WIDTH,
