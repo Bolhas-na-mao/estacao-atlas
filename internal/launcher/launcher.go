@@ -102,6 +102,7 @@ func (l *Launcher) Play(screen *ebiten.Image) {
 	err := games.PlayCurrentGame(screen)
 
 	if err != nil {
+		l.state = StateMenu
 		l.drawMenu(screen)
 	}
 }
