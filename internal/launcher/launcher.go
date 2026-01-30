@@ -22,6 +22,7 @@ type Launcher struct {
 	state        LauncherState
 	screenWidth  int
 	screenHeight int
+	gameButtons  []*ui.Button
 }
 
 const SCREEN_WIDTH = 1280
@@ -32,6 +33,25 @@ const LOGO_PATH = "internal/launcher/assets/atlas_logo.png"
 const LAUNCHER_TITLE = "Estação Atlas"
 
 func (l *Launcher) Update() error {
+
+	if l.state == StatePlaying {
+		return games.UpdateCurrentGame()
+	}
+
+	if l.state == StateMenu {
+		availableGames := games.ListGames()
+
+		for i, btn := range l.gameButtons {
+			if btn.Update() {
+				selectedGame := availableGames[i]
+
+				games.SetCurrentGame(selectedGame.ID)
+
+				l.state = StatePlaying
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -54,6 +74,10 @@ func (l *Launcher) drawMenu(screen *ebiten.Image) {
 		op.GeoM.Translate(x, y)
 
 		screen.DrawImage(l.img, op)
+	}
+
+	for _, btn := range l.gameButtons {
+		btn.Draw(screen)
 	}
 }
 
@@ -86,18 +110,40 @@ func (l *Launcher) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return l.GetArea()
 }
 
+func (l *Launcher) RenderButtons() {
+	availableGames := games.ListGames()
+	startY := 300
+
+	for i, g := range availableGames {
+		btn := ui.NewButton(
+			(SCREEN_WIDTH-200)/2,
+			startY+(i*60),
+			200, 50,
+			g.Name,
+		)
+
+		l.gameButtons = append(l.gameButtons, btn)
+	}
+
+}
+
 func NewLauncher() *Launcher {
 	img, _, err := ebitenutil.NewImageFromFile(LOGO_PATH)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return &Launcher{
+	l := &Launcher{
 		img:          img,
 		state:        StateMenu,
 		screenWidth:  SCREEN_WIDTH,
 		screenHeight: SCREEN_HEIGHT,
+		gameButtons:  []*ui.Button{},
 	}
+
+	l.RenderButtons()
+
+	return l
 }
 
 func RunLauncher() {

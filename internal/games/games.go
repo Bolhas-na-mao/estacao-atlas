@@ -8,13 +8,14 @@ import (
 )
 
 type Game struct {
-	ID   string
-	Name string
-	Run  func(screen *ebiten.Image) error
+	ID     string
+	Name   string
+	Run    func(screen *ebiten.Image) error
+	Update func() error
 }
 
 var games = []Game{
-	{ID: "lexis", Name: "O Silêncio de Lexis", Run: lexis.Run},
+	{ID: "lexis", Name: "O Silêncio de Lexis", Run: lexis.Run, Update: lexis.Update},
 }
 
 var currentGame *Game
@@ -35,6 +36,18 @@ func SetCurrentGame(id string) (*Game, error) {
 		}
 	}
 	return nil, errors.New("game not found")
+}
+
+func UpdateCurrentGame() error {
+	game := GetCurrentGame()
+
+	if game == nil {
+		return errors.New("no game selected")
+	}
+
+	game.Update()
+
+	return nil
 }
 
 func PlayCurrentGame(screen *ebiten.Image) error {
