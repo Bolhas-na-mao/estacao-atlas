@@ -8,7 +8,6 @@ import (
 
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/ui"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 var startButton *ui.Button
@@ -28,10 +27,29 @@ func init() {
 }
 
 func loadHeroAssets() (*Character, error) {
-	imgNorth, _, _ := ebitenutil.NewImageFromFile("internal/games/lexis/assets/characters/hero/idle/north.png")
-	imgSouth, _, _ := ebitenutil.NewImageFromFile("internal/games/lexis/assets/characters/hero/idle/south.png")
-	imgEast, _, _ := ebitenutil.NewImageFromFile("internal/games/lexis/assets/characters/hero/idle/east.png")
-	imgWest, _, _ := ebitenutil.NewImageFromFile("internal/games/lexis/assets/characters/hero/idle/west.png")
+	imgNorth, err := ui.RenderAsset(assets, "assets/characters/hero/idle/north.png")
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to load north sprite: %w", err)
+	}
+
+	imgSouth, err := ui.RenderAsset(assets, "assets/characters/hero/idle/south.png")
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to load south sprite: %w", err)
+	}
+
+	imgEast, err := ui.RenderAsset(assets, "assets/characters/hero/idle/east.png")
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to load east sprite: %w", err)
+	}
+
+	imgWest, err := ui.RenderAsset(assets, "assets/characters/hero/idle/west.png")
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to load west sprite: %w", err)
+	}
 
 	sprites := map[Direction]*ebiten.Image{
 		North: imgNorth,
@@ -69,6 +87,11 @@ func Run(screen *ebiten.Image) error {
 	startButton.Draw(screen)
 
 	op := &ebiten.DrawImageOptions{}
+
+	scale := 3.0
+
+	op.GeoM.Scale(scale, scale)
+
 	op.GeoM.Translate(hero.X, hero.Y)
 
 	screen.DrawImage(hero.GetCurrImage(), op)
