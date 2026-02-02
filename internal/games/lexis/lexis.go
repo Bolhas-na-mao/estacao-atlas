@@ -10,15 +10,12 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var startButton *ui.Button
 var hero *Character
 
 //go:embed assets/*
 var assets embed.FS
 
 func init() {
-	startButton = ui.NewButton(100, 100, 200, 50, "Lexis...")
-
 	var err error
 	hero, err = loadHeroAssets()
 	if err != nil {
@@ -62,10 +59,6 @@ func loadHeroAssets() (*Character, error) {
 }
 
 func Update() error {
-	if startButton.Update() {
-		fmt.Println("Botao clicado")
-	}
-
 	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
 		hero.Move(North)
 	}
@@ -84,7 +77,6 @@ func Update() error {
 
 func Run(screen *ebiten.Image) error {
 	screen.Fill(color.RGBA{0, 0, 0, 255})
-	startButton.Draw(screen)
 
 	op := &ebiten.DrawImageOptions{}
 
