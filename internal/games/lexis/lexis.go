@@ -17,14 +17,20 @@ var hero *Character
 var assets embed.FS
 
 func init() {
-	var err error
-	hero, err = loadHeroAssets()
+	sprites, err := loadHeroSpriteSheet()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	hero, err = NewCharacter(sprites, South, "Hero", 100, 100)
+
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func loadHeroAssets() (*Character, error) {
+func loadHeroSpriteSheet() (map[Direction]*ebiten.Image, error) {
 	spritesheet, err := ui.RenderAsset(assets, "assets/hero/hero_idle.png")
 	if err != nil {
 		return nil, fmt.Errorf("failed to load hero spritesheet: %w", err)
@@ -39,7 +45,7 @@ func loadHeroAssets() (*Character, error) {
 		West:  spritesheet.SubImage(image.Rect(spriteWidth*3, 0, spriteWidth*4, spriteWidth)).(*ebiten.Image),
 	}
 
-	return NewCharacter(sprites, South, "Hero", 100, 100)
+	return sprites, nil
 }
 
 func Update() error {
