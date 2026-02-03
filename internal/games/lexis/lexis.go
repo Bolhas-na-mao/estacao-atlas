@@ -2,8 +2,6 @@ package lexis
 
 import (
 	"embed"
-	"fmt"
-	"image"
 	"image/color"
 	"log"
 
@@ -17,35 +15,15 @@ var hero *Character
 var assets embed.FS
 
 func init() {
-	sprites, err := loadHeroSpriteSheet()
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	hero, err = NewCharacter(sprites, South, "Hero", 100, 100)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func loadHeroSpriteSheet() (map[Direction]*ebiten.Image, error) {
 	spritesheet, err := ui.RenderAsset(assets, "assets/hero/hero_idle.png")
 	if err != nil {
-		return nil, fmt.Errorf("failed to load hero spritesheet: %w", err)
+		log.Fatal(err)
 	}
 
-	spriteWidth := 48
-
-	sprites := map[Direction]*ebiten.Image{
-		South: spritesheet.SubImage(image.Rect(0, 0, spriteWidth, spriteWidth)).(*ebiten.Image),
-		East:  spritesheet.SubImage(image.Rect(spriteWidth, 0, spriteWidth*2, spriteWidth)).(*ebiten.Image),
-		North: spritesheet.SubImage(image.Rect(spriteWidth*2, 0, spriteWidth*3, spriteWidth)).(*ebiten.Image),
-		West:  spritesheet.SubImage(image.Rect(spriteWidth*3, 0, spriteWidth*4, spriteWidth)).(*ebiten.Image),
+	hero, err = NewCharacter(spritesheet, South, "Hero", 100, 100)
+	if err != nil {
+		log.Fatal(err)
 	}
-
-	return sprites, nil
 }
 
 func Update() error {
