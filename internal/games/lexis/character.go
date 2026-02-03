@@ -1,6 +1,10 @@
 package lexis
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"image"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type Direction int
 
@@ -11,6 +15,8 @@ const (
 	West
 )
 
+const SPRITE_SIZE = 48
+
 type Character struct {
 	Sprites map[Direction]*ebiten.Image
 	CurrDir Direction
@@ -18,7 +24,15 @@ type Character struct {
 	X, Y    float64
 }
 
-func NewCharacter(sprites map[Direction]*ebiten.Image, startDir Direction, name string, X, Y float64) (*Character, error) {
+func NewCharacter(spritesheet *ebiten.Image, startDir Direction, name string, X, Y float64) (*Character, error) {
+
+	sprites := map[Direction]*ebiten.Image{
+		South: spritesheet.SubImage(image.Rect(0, 0, SPRITE_SIZE, SPRITE_SIZE)).(*ebiten.Image),
+		East:  spritesheet.SubImage(image.Rect(SPRITE_SIZE, 0, SPRITE_SIZE*2, SPRITE_SIZE)).(*ebiten.Image),
+		North: spritesheet.SubImage(image.Rect(SPRITE_SIZE*2, 0, SPRITE_SIZE*3, SPRITE_SIZE)).(*ebiten.Image),
+		West:  spritesheet.SubImage(image.Rect(SPRITE_SIZE*3, 0, SPRITE_SIZE*4, SPRITE_SIZE)).(*ebiten.Image),
+	}
+
 	return &Character{
 		Sprites: sprites,
 		CurrDir: startDir,
@@ -31,7 +45,7 @@ func NewCharacter(sprites map[Direction]*ebiten.Image, startDir Direction, name 
 func (c *Character) Move(dir Direction) {
 	c.CurrDir = dir
 
-	speed := 2.0
+	speed := 3.0
 	switch dir {
 	case North:
 		c.Y -= speed

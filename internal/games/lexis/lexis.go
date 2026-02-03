@@ -2,7 +2,6 @@ package lexis
 
 import (
 	"embed"
-	"fmt"
 	"image/color"
 	"log"
 
@@ -16,46 +15,15 @@ var hero *Character
 var assets embed.FS
 
 func init() {
-	var err error
-	hero, err = loadHeroAssets()
+	spritesheet, err := ui.RenderAsset(assets, "assets/hero/hero_idle.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-}
 
-func loadHeroAssets() (*Character, error) {
-	imgNorth, err := ui.RenderAsset(assets, "assets/characters/hero/idle/north.png")
-
+	hero, err = NewCharacter(spritesheet, South, "Hero", 100, 100)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load north sprite: %w", err)
+		log.Fatal(err)
 	}
-
-	imgSouth, err := ui.RenderAsset(assets, "assets/characters/hero/idle/south.png")
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to load south sprite: %w", err)
-	}
-
-	imgEast, err := ui.RenderAsset(assets, "assets/characters/hero/idle/east.png")
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to load east sprite: %w", err)
-	}
-
-	imgWest, err := ui.RenderAsset(assets, "assets/characters/hero/idle/west.png")
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to load west sprite: %w", err)
-	}
-
-	sprites := map[Direction]*ebiten.Image{
-		North: imgNorth,
-		South: imgSouth,
-		East:  imgEast,
-		West:  imgWest,
-	}
-
-	return NewCharacter(sprites, South, "Hero", 100, 100)
 }
 
 func Update() error {
