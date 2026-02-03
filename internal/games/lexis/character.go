@@ -31,7 +31,7 @@ func NewCharacter(sprites map[Direction]*ebiten.Image, startDir Direction, name 
 func (c *Character) Move(dir Direction) {
 	c.CurrDir = dir
 
-	speed := 2.0
+	speed := 3.0
 	switch dir {
 	case North:
 		c.Y -= speed
