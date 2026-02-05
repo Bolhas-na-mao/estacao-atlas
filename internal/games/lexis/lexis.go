@@ -15,18 +15,46 @@ var hero *Character
 var assets embed.FS
 
 func init() {
-	spritesheet, err := ui.RenderAsset(assets, "assets/hero/hero_idle.png")
+	idleSpritesheet, err := ui.RenderAsset(assets, "assets/hero/hero_idle.png")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	hero, err = NewCharacter(spritesheet, South, "Hero", 100, 100)
+	walkingSpritesheets := make(map[Direction]*ebiten.Image)
+
+	southWalk, err := ui.RenderAsset(assets, "assets/hero/hero_walking_south.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	walkingSpritesheets[South] = southWalk
+
+	northWalk, err := ui.RenderAsset(assets, "assets/hero/hero_walking_north.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	walkingSpritesheets[North] = northWalk
+
+	eastWalk, err := ui.RenderAsset(assets, "assets/hero/hero_walking_east.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	walkingSpritesheets[East] = eastWalk
+
+	westWalk, err := ui.RenderAsset(assets, "assets/hero/hero_walking_west.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	walkingSpritesheets[West] = westWalk
+
+	hero, err = NewCharacter(idleSpritesheet, walkingSpritesheets, South, "Hero", 100, 100)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func Update() error {
+	hero.IsWalking = false
+
 	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
 		hero.Move(North)
 	}
@@ -39,6 +67,8 @@ func Update() error {
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
 		hero.Move(East)
 	}
+
+	hero.Update()
 
 	return nil
 }
