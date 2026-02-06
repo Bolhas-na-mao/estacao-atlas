@@ -19,7 +19,7 @@ const SPRITE_SIZE = 48
 const ANIMATION_FRAMES = 4
 const ANIMATION_SPEED = 8
 
-type Character struct {
+type Player struct {
 	IdleSprites    map[Direction]*ebiten.Image
 	WalkingSprites map[Direction][]*ebiten.Image
 	CurrDir        Direction
@@ -30,7 +30,7 @@ type Character struct {
 	AnimTick       int
 }
 
-func NewCharacter(idleSpritesheet *ebiten.Image, walkingSpritesheets map[Direction]*ebiten.Image, startDir Direction, name string, X, Y float64) (*Character, error) {
+func NewPlayer(idleSpritesheet *ebiten.Image, walkingSpritesheets map[Direction]*ebiten.Image, startDir Direction, name string, X, Y float64) (*Player, error) {
 	idleSprites := map[Direction]*ebiten.Image{
 		South: idleSpritesheet.SubImage(image.Rect(0, 0, SPRITE_SIZE, SPRITE_SIZE)).(*ebiten.Image),
 		East:  idleSpritesheet.SubImage(image.Rect(SPRITE_SIZE, 0, SPRITE_SIZE*2, SPRITE_SIZE)).(*ebiten.Image),
@@ -47,7 +47,7 @@ func NewCharacter(idleSpritesheet *ebiten.Image, walkingSpritesheets map[Directi
 		walkingSprites[dir] = frames
 	}
 
-	return &Character{
+	return &Player{
 		IdleSprites:    idleSprites,
 		WalkingSprites: walkingSprites,
 		CurrDir:        startDir,
@@ -60,7 +60,7 @@ func NewCharacter(idleSpritesheet *ebiten.Image, walkingSpritesheets map[Directi
 	}, nil
 }
 
-func (c *Character) Move(dir Direction) {
+func (c *Player) Move(dir Direction) {
 	c.CurrDir = dir
 	c.IsWalking = true
 
@@ -77,7 +77,7 @@ func (c *Character) Move(dir Direction) {
 	}
 }
 
-func (c *Character) Update() {
+func (c *Player) Update() {
 	if c.IsWalking {
 		c.AnimTick++
 		if c.AnimTick >= ANIMATION_SPEED {
@@ -90,7 +90,7 @@ func (c *Character) Update() {
 	}
 }
 
-func (c *Character) GetCurrImage() *ebiten.Image {
+func (c *Player) GetCurrImage() *ebiten.Image {
 	if c.IsWalking {
 		return c.WalkingSprites[c.CurrDir][c.AnimFrame]
 	}
