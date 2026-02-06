@@ -16,34 +16,53 @@ const (
 )
 
 const SPRITE_SIZE = 48
+const ANIMATION_FRAMES = 4
+const ANIMATION_SPEED = 8
 
 type Character struct {
-	Sprites map[Direction]*ebiten.Image
-	CurrDir Direction
-	Name    string
-	X, Y    float64
+	IdleSprites    map[Direction]*ebiten.Image
+	WalkingSprites map[Direction][]*ebiten.Image
+	CurrDir        Direction
+	Name           string
+	X, Y           float64
+	IsWalking      bool
+	AnimFrame      int
+	AnimTick       int
 }
 
-func NewCharacter(spritesheet *ebiten.Image, startDir Direction, name string, X, Y float64) (*Character, error) {
+func NewCharacter(idleSpritesheet *ebiten.Image, walkingSpritesheets map[Direction]*ebiten.Image, startDir Direction, name string, X, Y float64) (*Character, error) {
+	idleSprites := map[Direction]*ebiten.Image{
+		South: idleSpritesheet.SubImage(image.Rect(0, 0, SPRITE_SIZE, SPRITE_SIZE)).(*ebiten.Image),
+		East:  idleSpritesheet.SubImage(image.Rect(SPRITE_SIZE, 0, SPRITE_SIZE*2, SPRITE_SIZE)).(*ebiten.Image),
+		North: idleSpritesheet.SubImage(image.Rect(SPRITE_SIZE*2, 0, SPRITE_SIZE*3, SPRITE_SIZE)).(*ebiten.Image),
+		West:  idleSpritesheet.SubImage(image.Rect(SPRITE_SIZE*3, 0, SPRITE_SIZE*4, SPRITE_SIZE)).(*ebiten.Image),
+	}
 
-	sprites := map[Direction]*ebiten.Image{
-		South: spritesheet.SubImage(image.Rect(0, 0, SPRITE_SIZE, SPRITE_SIZE)).(*ebiten.Image),
-		East:  spritesheet.SubImage(image.Rect(SPRITE_SIZE, 0, SPRITE_SIZE*2, SPRITE_SIZE)).(*ebiten.Image),
-		North: spritesheet.SubImage(image.Rect(SPRITE_SIZE*2, 0, SPRITE_SIZE*3, SPRITE_SIZE)).(*ebiten.Image),
-		West:  spritesheet.SubImage(image.Rect(SPRITE_SIZE*3, 0, SPRITE_SIZE*4, SPRITE_SIZE)).(*ebiten.Image),
+	walkingSprites := make(map[Direction][]*ebiten.Image)
+	for dir, sheet := range walkingSpritesheets {
+		frames := make([]*ebiten.Image, ANIMATION_FRAMES)
+		for i := 0; i < ANIMATION_FRAMES; i++ {
+			frames[i] = sheet.SubImage(image.Rect(i*SPRITE_SIZE, 0, (i+1)*SPRITE_SIZE, SPRITE_SIZE)).(*ebiten.Image)
+		}
+		walkingSprites[dir] = frames
 	}
 
 	return &Character{
-		Sprites: sprites,
-		CurrDir: startDir,
-		Name:    name,
-		X:       X,
-		Y:       Y,
+		IdleSprites:    idleSprites,
+		WalkingSprites: walkingSprites,
+		CurrDir:        startDir,
+		Name:           name,
+		X:              X,
+		Y:              Y,
+		IsWalking:      false,
+		AnimFrame:      0,
+		AnimTick:       0,
 	}, nil
 }
 
 func (c *Character) Move(dir Direction) {
 	c.CurrDir = dir
+	c.IsWalking = true
 
 	speed := 3.0
 	switch dir {
@@ -58,6 +77,22 @@ func (c *Character) Move(dir Direction) {
 	}
 }
 
+func (c *Character) Update() {
+	if c.IsWalking {
+		c.AnimTick++
+		if c.AnimTick >= ANIMATION_SPEED {
+			c.AnimTick = 0
+			c.AnimFrame = (c.AnimFrame + 1) % ANIMATION_FRAMES
+		}
+	} else {
+		c.AnimFrame = 0
+		c.AnimTick = 0
+	}
+}
+
 func (c *Character) GetCurrImage() *ebiten.Image {
-	return c.Sprites[c.CurrDir]
+	if c.IsWalking {
+		return c.WalkingSprites[c.CurrDir][c.AnimFrame]
+	}
+	return c.IdleSprites[c.CurrDir]
 }
