@@ -9,7 +9,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var hero *Character
+var hero *Player
 
 //go:embed assets/*
 var assets embed.FS
@@ -46,7 +46,7 @@ func init() {
 	}
 	walkingSpritesheets[West] = westWalk
 
-	hero, err = NewCharacter(idleSpritesheet, walkingSpritesheets, South, "Hero", 100, 100)
+	hero, err = NewPlayer(idleSpritesheet, walkingSpritesheets, South, "Hero", 100, 100)
 	if err != nil {
 		log.Fatal(err)
 	}
