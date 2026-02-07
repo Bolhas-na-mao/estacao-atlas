@@ -60,39 +60,39 @@ func NewPlayer(idleSpritesheet *ebiten.Image, walkingSpritesheets map[Direction]
 	}, nil
 }
 
-func (c *Player) Move(dir Direction) {
-	c.CurrDir = dir
-	c.IsWalking = true
+func (p *Player) Move(dir Direction) {
+	p.CurrDir = dir
+	p.IsWalking = true
 
 	speed := 3.0
 	switch dir {
 	case North:
-		c.Y -= speed
+		p.Y -= speed
 	case South:
-		c.Y += speed
+		p.Y += speed
 	case West:
-		c.X -= speed
+		p.X -= speed
 	case East:
-		c.X += speed
+		p.X += speed
 	}
 }
 
-func (c *Player) Update() {
-	if c.IsWalking {
-		c.AnimTick++
-		if c.AnimTick >= ANIMATION_SPEED {
-			c.AnimTick = 0
-			c.AnimFrame = (c.AnimFrame + 1) % ANIMATION_FRAMES
+func (p *Player) Update() {
+	if p.IsWalking {
+		p.AnimTick++
+		if p.AnimTick >= ANIMATION_SPEED {
+			p.AnimTick = 0
+			p.AnimFrame = (p.AnimFrame + 1) % ANIMATION_FRAMES
 		}
 	} else {
-		c.AnimFrame = 0
-		c.AnimTick = 0
+		p.AnimFrame = 0
+		p.AnimTick = 0
 	}
 }
 
-func (c *Player) GetCurrImage() *ebiten.Image {
-	if c.IsWalking {
-		return c.WalkingSprites[c.CurrDir][c.AnimFrame]
+func (p *Player) GetCurrImage() *ebiten.Image {
+	if p.IsWalking {
+		return p.WalkingSprites[p.CurrDir][p.AnimFrame]
 	}
-	return c.IdleSprites[c.CurrDir]
+	return p.IdleSprites[p.CurrDir]
 }
