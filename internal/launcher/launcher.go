@@ -7,8 +7,10 @@ import (
 	"log"
 
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/games"
+	_ "github.com/Bolhas-na-mao/estacao-atlas/internal/games/lexis"
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/ui"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 //go:embed assets/*
@@ -21,45 +23,44 @@ const (
 	StatePlaying
 )
 
+const (
+	defaultScreenWidth  = 1280
+	defaultScreenHeight = 720
+	cellSize            = 30
+	gridPadding         = 10
+	logoPath            = "assets/atlas_logo.png"
+	launcherTitle       = "Estação Atlas"
+	logoScale           = 0.35
+	buttonStartY        = 300
+	buttonWidth         = 200
+	buttonHeight        = 50
+	buttonSpacing       = 60
+)
+
 type Launcher struct {
 	img          *ebiten.Image
 	state        LauncherState
 	screenWidth  int
 	screenHeight int
 	gameButtons  []*ui.Button
+	gameInfos    []games.GameInfo
+	currentGame  games.Game
 }
 
-const SCREEN_WIDTH = 1280
-const SCREEN_HEIGHT = 720
-const CELL_SIZE = 30
-const PADDING = 10
-const LOGO_PATH = "assets/atlas_logo.png"
-const LAUNCHER_TITLE = "Estação Atlas"
-
 func (l *Launcher) Update() error {
-
 	if l.state == StatePlaying {
-		if err := games.UpdateCurrentGame(); err != nil {
-			log.Printf("update failed: %v", err)
+		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+			l.currentGame = nil
 			l.state = StateMenu
+			return nil
 		}
-		return nil
+		return l.currentGame.Update()
 	}
 
-	if l.state == StateMenu {
-		availableGames := games.ListGames()
-
-		for i, btn := range l.gameButtons {
-			if btn.Update() {
-				selectedGame := availableGames[i]
-
-				if _, err := games.SetCurrentGame(selectedGame.ID); err != nil {
-					log.Printf("failed to select game %s: %v", selectedGame.ID, err)
-					continue
-				}
-
-				l.state = StatePlaying
-			}
+	for i, btn := range l.gameButtons {
+		if btn.Update() {
+			l.currentGame = l.gameInfos[i].New()
+			l.state = StatePlaying
 		}
 	}
 
@@ -69,17 +70,15 @@ func (l *Launcher) Update() error {
 func (l *Launcher) drawMenu(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{228, 228, 228, 255})
 
-	ui.DrawGrid(color.RGBA{217, 218, 224, 255}, screen, l.screenWidth, l.screenHeight, PADDING, CELL_SIZE)
+	ui.DrawGrid(color.RGBA{217, 218, 224, 255}, screen, l.screenWidth, l.screenHeight, gridPadding, cellSize)
 
 	if l.img != nil {
-		w, _ := l.img.Bounds().Dx(), l.img.Bounds().Dy()
+		w := l.img.Bounds().Dx()
 
 		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Scale(logoScale, logoScale)
 
-		scale := 0.35
-		op.GeoM.Scale(scale, scale)
-
-		x := (float64(l.screenWidth) - (float64(w) * scale)) / 2
+		x := (float64(l.screenWidth) - (float64(w) * logoScale)) / 2
 		y := float64(l.screenHeight) / 100
 
 		op.GeoM.Translate(x, y)
@@ -94,55 +93,31 @@ func (l *Launcher) drawMenu(screen *ebiten.Image) {
 
 func (l *Launcher) Draw(screen *ebiten.Image) {
 	switch l.state {
-	case StateMenu:
-		l.drawMenu(screen)
 	case StatePlaying:
-		l.Play(screen)
-
+		l.currentGame.Draw(screen)
 	default:
 		l.drawMenu(screen)
 	}
 }
 
-func (l *Launcher) Play(screen *ebiten.Image) {
-
-	err := games.PlayCurrentGame(screen)
-
-	if err != nil {
-		l.state = StateMenu
-		l.drawMenu(screen)
-	}
-}
-
-func (l *Launcher) GetArea() (int, int) {
+func (l *Launcher) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return l.screenWidth, l.screenHeight
 }
 
-func (l *Launcher) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return l.GetArea()
-}
-
-func (l *Launcher) RenderButtons() {
-	availableGames := games.ListGames()
-	startY := 300
-
-	for i, g := range availableGames {
+func (l *Launcher) renderButtons() {
+	for i, g := range l.gameInfos {
 		btn := ui.NewButton(
-			(SCREEN_WIDTH-200)/2,
-			startY+(i*60),
-			200, 50,
+			(defaultScreenWidth-buttonWidth)/2,
+			buttonStartY+(i*buttonSpacing),
+			buttonWidth, buttonHeight,
 			g.Name,
 		)
-
 		l.gameButtons = append(l.gameButtons, btn)
 	}
-
 }
 
 func NewLauncher() (*Launcher, error) {
-
-	img, err := ui.RenderAsset(assets, LOGO_PATH)
-
+	img, err := ui.RenderAsset(assets, logoPath)
 	if err != nil {
 		return nil, err
 	}
@@ -150,28 +125,24 @@ func NewLauncher() (*Launcher, error) {
 	launcher := &Launcher{
 		img:          img,
 		state:        StateMenu,
-		screenWidth:  SCREEN_WIDTH,
-		screenHeight: SCREEN_HEIGHT,
-		gameButtons:  []*ui.Button{},
+		screenWidth:  defaultScreenWidth,
+		screenHeight: defaultScreenHeight,
+		gameInfos:    games.ListGames(),
 	}
 
-	launcher.RenderButtons()
+	launcher.renderButtons()
 
 	return launcher, nil
 }
 
 func RunLauncher() {
 	launcher, err := NewLauncher()
-
 	if err != nil {
 		log.Fatal(err)
-		return
 	}
 
-	width, height := launcher.GetArea()
-
-	ebiten.SetWindowSize(width, height)
-	ebiten.SetWindowTitle(LAUNCHER_TITLE)
+	ebiten.SetWindowSize(launcher.screenWidth, launcher.screenHeight)
+	ebiten.SetWindowTitle(launcherTitle)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	if err := ebiten.RunGame(launcher); err != nil {
