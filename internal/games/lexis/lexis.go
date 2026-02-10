@@ -5,16 +5,31 @@ import (
 	"image/color"
 	"log"
 
+	"github.com/Bolhas-na-mao/estacao-atlas/internal/games"
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/ui"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var hero *Player
-
 //go:embed assets/*
 var assets embed.FS
 
+const heroScale = 3.0
+
 func init() {
+	games.Register(games.GameInfo{
+		ID:   "lexis",
+		Name: "O Silêncio de Lexis",
+		New: func() games.Game {
+			return New()
+		},
+	})
+}
+
+type LexisGame struct {
+	hero *Player
+}
+
+func New() *LexisGame {
 	idleSpritesheet, err := ui.RenderAsset(assets, "assets/hero/hero_idle.png")
 	if err != nil {
 		log.Fatal(err)
@@ -46,45 +61,38 @@ func init() {
 	}
 	walkingSpritesheets[West] = westWalk
 
-	hero, err = NewPlayer(idleSpritesheet, walkingSpritesheets, South, "Hero", 100, 100)
-	if err != nil {
-		log.Fatal(err)
-	}
+	hero := newPlayer(idleSpritesheet, walkingSpritesheets, South, "Hero", 100, 100)
+
+	return &LexisGame{hero: hero}
 }
 
-func Update() error {
-	hero.IsWalking = false
+func (g *LexisGame) Update() error {
+	g.hero.isWalking = false
 
 	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
-		hero.Move(North)
+		g.hero.move(North)
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
-		hero.Move(South)
+		g.hero.move(South)
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-		hero.Move(West)
+		g.hero.move(West)
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-		hero.Move(East)
+		g.hero.move(East)
 	}
 
-	hero.Update()
+	g.hero.update()
 
 	return nil
 }
 
-func Run(screen *ebiten.Image) error {
+func (g *LexisGame) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{0, 0, 0, 255})
 
 	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(heroScale, heroScale)
+	op.GeoM.Translate(g.hero.x, g.hero.y)
 
-	scale := 3.0
-
-	op.GeoM.Scale(scale, scale)
-
-	op.GeoM.Translate(hero.X, hero.Y)
-
-	screen.DrawImage(hero.GetCurrImage(), op)
-
-	return nil
+	screen.DrawImage(g.hero.currentImage(), op)
 }
