@@ -69,18 +69,20 @@ func New() *LexisGame {
 func (g *LexisGame) Update() error {
 	g.hero.isWalking = false
 
+	var dx, dy float64
 	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
-		g.hero.move(North)
+		dy--
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
-		g.hero.move(South)
+		dy++
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-		g.hero.move(West)
+		dx--
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-		g.hero.move(East)
+		dx++
 	}
+	g.hero.move(dx, dy)
 
 	g.hero.update()
 

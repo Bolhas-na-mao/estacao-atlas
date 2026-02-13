@@ -2,6 +2,7 @@ package lexis
 
 import (
 	"image"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -60,20 +61,25 @@ func newPlayer(idleSpritesheet *ebiten.Image, walkingSpritesheets map[Direction]
 	}
 }
 
-func (p *Player) move(dir Direction) {
-	p.currDir = dir
-	p.isWalking = true
-
-	switch dir {
-	case North:
-		p.y -= moveSpeed
-	case South:
-		p.y += moveSpeed
-	case West:
-		p.x -= moveSpeed
-	case East:
-		p.x += moveSpeed
+func (p *Player) move(dx, dy float64) {
+	if dx == 0 && dy == 0 {
+		return
 	}
+
+	if dy < 0 {
+		p.currDir = North
+	} else if dy > 0 {
+		p.currDir = South
+	} else if dx < 0 {
+		p.currDir = West
+	} else if dx > 0 {
+		p.currDir = East
+	}
+
+	length := math.Sqrt(dx*dx + dy*dy)
+	p.x += (dx / length) * moveSpeed
+	p.y += (dy / length) * moveSpeed
+	p.isWalking = true
 }
 
 func (p *Player) update() {
