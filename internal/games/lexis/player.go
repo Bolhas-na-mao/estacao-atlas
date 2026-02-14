@@ -66,14 +66,14 @@ func (p *Player) move(dx, dy float64) {
 		return
 	}
 
-	if dy < 0 {
-		p.currDir = North
-	} else if dy > 0 {
-		p.currDir = South
-	} else if dx < 0 {
+	if dx < 0 {
 		p.currDir = West
 	} else if dx > 0 {
 		p.currDir = East
+	} else if dy < 0 {
+		p.currDir = North
+	} else if dy > 0 {
+		p.currDir = South
 	}
 
 	length := math.Sqrt(dx*dx + dy*dy)
