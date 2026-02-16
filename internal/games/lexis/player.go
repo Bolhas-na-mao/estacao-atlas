@@ -76,9 +76,9 @@ func (p *Player) move(dx, dy float64) {
 		p.currDir = South
 	}
 
-	length := math.Sqrt(dx*dx + dy*dy)
-	p.x += (dx / length) * moveSpeed
-	p.y += (dy / length) * moveSpeed
+	len := math.Sqrt(dx*dx + dy*dy)
+	p.x += (dx / len) * moveSpeed
+	p.y += (dy / len) * moveSpeed
 	p.isWalking = true
 }
 
