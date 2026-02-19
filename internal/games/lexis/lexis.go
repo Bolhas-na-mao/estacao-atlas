@@ -30,38 +30,26 @@ type LexisGame struct {
 }
 
 func New() *LexisGame {
-	idleSpritesheet, err := ui.RenderAsset(assets, "assets/hero/hero_idle.png")
+	idleSpritesheet, err := ui.RenderAsset(assets, "assets/hero/hero.png")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	walkingSpritesheets := make(map[Direction]*ebiten.Image)
 
-	southWalk, err := ui.RenderAsset(assets, "assets/hero/hero_walking_south.png")
+	rightWalk, err := ui.RenderAsset(assets, "assets/hero/walking_right.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	walkingSpritesheets[South] = southWalk
+	walkingSpritesheets[Right] = rightWalk
 
-	northWalk, err := ui.RenderAsset(assets, "assets/hero/hero_walking_north.png")
+	leftWalk, err := ui.RenderAsset(assets, "assets/hero/walking_left.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	walkingSpritesheets[North] = northWalk
+	walkingSpritesheets[Left] = leftWalk
 
-	eastWalk, err := ui.RenderAsset(assets, "assets/hero/hero_walking_east.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	walkingSpritesheets[East] = eastWalk
-
-	westWalk, err := ui.RenderAsset(assets, "assets/hero/hero_walking_west.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	walkingSpritesheets[West] = westWalk
-
-	hero := newPlayer(idleSpritesheet, walkingSpritesheets, South, "Hero", 100, 100)
+	hero := newPlayer(idleSpritesheet, walkingSpritesheets, Right, "Hero", 100, 100)
 
 	return &LexisGame{hero: hero}
 }
@@ -69,20 +57,14 @@ func New() *LexisGame {
 func (g *LexisGame) Update() error {
 	g.hero.isWalking = false
 
-	var dx, dy float64
-	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
-		dy--
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
-		dy++
-	}
+	var dx float64
 	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
 		dx--
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
 		dx++
 	}
-	g.hero.move(dx, dy)
+	g.hero.move(dx)
 
 	g.hero.update()
 
