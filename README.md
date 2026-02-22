@@ -1,5 +1,7 @@
 # Estação Atlas
 
+![Estação Atlas Logo](/internal/launcher/assets/atlas_logo.png)
+
 This project is a launcher that will contain a set of games related to [BNCC](https://basenacionalcomum.mec.gov.br/) abilities.
 
 ## License
