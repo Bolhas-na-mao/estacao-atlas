@@ -44,6 +44,7 @@ func New() *LexisGame {
 	walkingSpritesheets[Right] = rightWalk
 
 	leftWalk, err := ui.RenderAsset(assets, "assets/hero/walking_left.png")
+
 	if err != nil {
 		log.Fatal(err)
 	}
