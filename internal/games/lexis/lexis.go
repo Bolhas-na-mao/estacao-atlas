@@ -50,7 +50,7 @@ func New() *LexisGame {
 	}
 	walkingSpritesheets[Left] = leftWalk
 
-	hero := newPlayer(idleSpritesheet, walkingSpritesheets, Right, "Hero", 100, 100)
+	hero := newPlayer(idleSpritesheet, walkingSpritesheets, Right, "Hero", 200, 200)
 
 	return &LexisGame{hero: hero}
 }
