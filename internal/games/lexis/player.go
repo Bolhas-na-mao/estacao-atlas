@@ -11,6 +11,8 @@ type Direction int
 const (
 	Right Direction = iota
 	Left
+	Top
+	Down
 )
 
 const (
