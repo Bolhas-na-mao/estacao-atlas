@@ -51,7 +51,7 @@ func New() *LexisGame {
 	}
 	walkingSpritesheets[Left] = leftWalk
 
-	hero := newPlayer(idleSpritesheet, walkingSpritesheets, Right, "Hero", 30, 20)
+	hero := newPlayer(idleSpritesheet, walkingSpritesheets, Right, "Hero", 30, 30)
 
 	lib1, err := ui.RenderAsset(assets, "assets/rooms/library_1.png")
 	if err != nil {
@@ -66,7 +66,7 @@ func New() *LexisGame {
 	if err != nil {
 		log.Fatal(err)
 	}
-	golem := newGolem(golemSheet, "Golem", 390, 20)
+	golem := newGolem(golemSheet, "Golem", 390, 30)
 
 	theMap := Map{
 		rooms: []Room{
