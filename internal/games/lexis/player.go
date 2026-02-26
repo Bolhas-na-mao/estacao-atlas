@@ -11,14 +11,16 @@ type Direction int
 const (
 	Right Direction = iota
 	Left
+	Top
+	Down
 )
 
 const (
 	spriteWidth     = 92
 	spriteHeight    = 92
 	animationFrames = 6
-	animationSpeed  = 8
-	moveSpeed       = 3.0
+	animationSpeed  = 6
+	moveSpeed       = 1.5
 )
 
 type Player struct {
