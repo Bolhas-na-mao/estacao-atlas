@@ -53,11 +53,11 @@ func New() *LexisGame {
 
 	hero := newPlayer(idleSpritesheet, walkingSpritesheets, Right, "Hero", 30, 30)
 
-	lib1, err := ui.RenderAsset(assets, "assets/rooms/library_1.png")
+	lib1, err := ui.RenderAsset(assets, "assets/rooms/library.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	lib2, err := ui.RenderAsset(assets, "assets/rooms/library_2.png")
+	lib2, err := ui.RenderAsset(assets, "assets/rooms/hall.png")
 	if err != nil {
 		log.Fatal(err)
 	}
