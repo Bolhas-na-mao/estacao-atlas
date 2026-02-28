@@ -19,6 +19,22 @@ type Map struct {
 	rooms []Room
 }
 
+func (m *Map) nearestNpc(playerX, maxDist float64) *Npc {
+	for i := range m.rooms {
+		for j := range m.rooms[i].npcs {
+			npc := &m.rooms[i].npcs[j]
+			dx := npc.x - playerX
+			if dx < 0 {
+				dx = -dx
+			}
+			if dx < maxDist && len(npc.dialogue) > 0 {
+				return npc
+			}
+		}
+	}
+	return nil
+}
+
 func (m *Map) draw(screen *ebiten.Image, cam *Camera) {
 	for i := range m.rooms {
 		room := &m.rooms[i]
