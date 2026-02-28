@@ -16,9 +16,10 @@ type Npc struct {
 	currDir     Direction
 	name        string
 	x, y        float64
+	dialogue    []string
 }
 
-func newGolem(spritesheet *ebiten.Image, name string, x, y float64) *Npc {
+func newGolem(spritesheet *ebiten.Image, name string, x, y float64, dialogue []string) *Npc {
 	south := spritesheet.SubImage(
 		image.Rect(0, 0, npcSpriteWidth, npcSpriteHeight),
 	).(*ebiten.Image)
@@ -29,6 +30,7 @@ func newGolem(spritesheet *ebiten.Image, name string, x, y float64) *Npc {
 		name:        name,
 		x:           x,
 		y:           y,
+		dialogue:    dialogue,
 	}
 }
 
