@@ -8,6 +8,8 @@ import (
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/games"
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/ui"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 //go:embed assets/*
@@ -26,9 +28,11 @@ func init() {
 }
 
 type LexisGame struct {
-	hero   *Player
-	theMap Map
-	camera Camera
+	hero      *Player
+	theMap    Map
+	camera    Camera
+	dialogue  DialogueState
+	nearbyNpc *Npc
 }
 
 func New() *LexisGame {
@@ -66,7 +70,11 @@ func New() *LexisGame {
 	if err != nil {
 		log.Fatal(err)
 	}
-	golem := newGolem(golemSheet, "Golem", 390, 30)
+	golem := newGolem(golemSheet, "Golem", 390, 30, []string{
+		"...",
+		"Você entrou no Salão de Lexis.",
+		"Escolha suas palavras com cuidado.",
+	})
 
 	theMap := Map{
 		rooms: []Room{
@@ -83,26 +91,38 @@ func New() *LexisGame {
 }
 
 func (g *LexisGame) Update() error {
-	g.hero.isWalking = false
-
-	var dx float64
-	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-		dx--
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-		dx++
-	}
-	g.hero.move(dx)
-
-	if g.hero.x < 0 {
-		g.hero.x = 0
-	}
-	if g.hero.x > worldWidth-spriteWidth {
-		g.hero.x = worldWidth - spriteWidth
+	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+		if g.dialogue.active {
+			g.dialogue.advance()
+		} else if g.nearbyNpc != nil {
+			g.dialogue.start(g.nearbyNpc)
+		}
 	}
 
-	g.hero.update()
-	g.camera.update(g.hero.x, worldWidth)
+	if !g.dialogue.active {
+		g.hero.isWalking = false
+
+		var dx float64
+		if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
+			dx--
+		}
+		if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
+			dx++
+		}
+		g.hero.move(dx)
+
+		if g.hero.x < 0 {
+			g.hero.x = 0
+		}
+		if g.hero.x > worldWidth-spriteWidth {
+			g.hero.x = worldWidth - spriteWidth
+		}
+
+		g.hero.update()
+		g.camera.update(g.hero.x, worldWidth)
+	}
+
+	g.nearbyNpc = g.theMap.nearestNpc(g.hero.x, interactionRange)
 
 	return nil
 }
@@ -117,4 +137,11 @@ func (g *LexisGame) Draw(screen *ebiten.Image) {
 	op.GeoM.Scale(heroScale, heroScale)
 	op.GeoM.Translate(sx, sy)
 	screen.DrawImage(g.hero.currentImage(), op)
+
+	if !g.dialogue.active && g.nearbyNpc != nil {
+		nx, ny := g.camera.toScreen(g.nearbyNpc.x, g.nearbyNpc.y)
+		ebitenutil.DebugPrintAt(screen, "[ESPAÇO]", int(nx)+npcSpriteWidth*heroScale/2-20, int(ny)-14)
+	}
+
+	g.dialogue.draw(screen)
 }
