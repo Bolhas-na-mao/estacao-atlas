@@ -2,6 +2,7 @@ package lexis
 
 import (
 	"image"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -9,18 +10,17 @@ import (
 type Direction int
 
 const (
-	Right Direction = iota
-	Left
-	Top
-	Down
+	South Direction = iota
+	North
+	East
+	West
 )
 
 const (
-	spriteWidth     = 92
-	spriteHeight    = 92
-	animationFrames = 6
-	animationSpeed  = 6
-	moveSpeed       = 1.5
+	spriteSize      = 48
+	animationFrames = 4
+	animationSpeed  = 8
+	moveSpeed       = 3.0
 )
 
 type Player struct {
@@ -36,15 +36,17 @@ type Player struct {
 
 func newPlayer(idleSpritesheet *ebiten.Image, walkingSpritesheets map[Direction]*ebiten.Image, startDir Direction, name string, x, y float64) *Player {
 	idleSprites := map[Direction]*ebiten.Image{
-		Right: idleSpritesheet.SubImage(image.Rect(0, 0, spriteWidth, spriteHeight)).(*ebiten.Image),
-		Left:  idleSpritesheet.SubImage(image.Rect(spriteWidth, 0, spriteWidth*2, spriteHeight)).(*ebiten.Image),
+		South: idleSpritesheet.SubImage(image.Rect(0, 0, spriteSize, spriteSize)).(*ebiten.Image),
+		East:  idleSpritesheet.SubImage(image.Rect(spriteSize, 0, spriteSize*2, spriteSize)).(*ebiten.Image),
+		North: idleSpritesheet.SubImage(image.Rect(spriteSize*2, 0, spriteSize*3, spriteSize)).(*ebiten.Image),
+		West:  idleSpritesheet.SubImage(image.Rect(spriteSize*3, 0, spriteSize*4, spriteSize)).(*ebiten.Image),
 	}
 
 	walkingSprites := make(map[Direction][]*ebiten.Image)
 	for dir, sheet := range walkingSpritesheets {
 		frames := make([]*ebiten.Image, animationFrames)
 		for i := 0; i < animationFrames; i++ {
-			frames[i] = sheet.SubImage(image.Rect(i*spriteWidth, 0, (i+1)*spriteWidth, spriteHeight)).(*ebiten.Image)
+			frames[i] = sheet.SubImage(image.Rect(i*spriteSize, 0, (i+1)*spriteSize, spriteSize)).(*ebiten.Image)
 		}
 		walkingSprites[dir] = frames
 	}
@@ -59,18 +61,24 @@ func newPlayer(idleSpritesheet *ebiten.Image, walkingSpritesheets map[Direction]
 	}
 }
 
-func (p *Player) move(dx float64) {
-	if dx == 0 {
+func (p *Player) move(dx, dy float64) {
+	if dx == 0 && dy == 0 {
 		return
 	}
 
 	if dx < 0 {
-		p.currDir = Left
-	} else {
-		p.currDir = Right
+		p.currDir = West
+	} else if dx > 0 {
+		p.currDir = East
+	} else if dy < 0 {
+		p.currDir = North
+	} else if dy > 0 {
+		p.currDir = South
 	}
 
-	p.x += dx * moveSpeed
+	length := math.Sqrt(dx*dx + dy*dy)
+	p.x += (dx / length) * moveSpeed
+	p.y += (dy / length) * moveSpeed
 	p.isWalking = true
 }
 
