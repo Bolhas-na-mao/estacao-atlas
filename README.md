@@ -1,6 +1,7 @@
 # Estação Atlas
 
 ![Estação Atlas Logo](/internal/launcher/assets/atlas_logo.png)
+![Version](https://img.shields.io/github/v/release/Bolhas-na-mao/estacao-atlas)
 
 This project is a launcher that will contain a set of games related to [BNCC](https://basenacionalcomum.mec.gov.br/) abilities.
 
