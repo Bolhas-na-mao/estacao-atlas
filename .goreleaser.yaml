@@ -35,7 +35,23 @@ release:
 
 changelog:
   sort: asc
+  use: git
   filters:
     exclude:
+      - "^Merge"
+      - "^merge"
       - "^docs:"
       - "^test:"
+      - "^chore:"
+  groups:
+    - title: "New Features"
+      regexp: "^feat"
+      order: 0
+    - title: "Bug Fixes"
+      regexp: "^fix"
+      order: 1
+    - title: "Maintenance"
+      regexp: "^(refactor|perf|ci|build)"
+      order: 2
+    - title: Others
+      order: 999
