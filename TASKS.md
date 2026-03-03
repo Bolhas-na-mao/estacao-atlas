@@ -173,6 +173,7 @@ O texto da fala deve aparecer caractere por caractere, simulando uma máquina de
 **Definição de Pronto:**
 - Texto aparece progressivamente a uma velocidade agradável
 - Pressionar espaço durante a animação exibe o texto completo instantaneamente
+- Um único pressionamento de espaço não pode ao mesmo tempo completar o texto e avançar o diálogo: quando o espaço completa o texto, esse pressionamento é consumido e o avanço de linha só ocorre em um novo pressionamento (tecla solta e pressionada novamente)
 - Funciona para qualquer string de diálogo
 
 ---
@@ -215,8 +216,9 @@ Implementar a mecânica central da Fase 1: barra de Credibilidade começa em 5, 
 **Definição de Pronto:**
 - Barra de Credibilidade renderizada na tela durante o desafio
 - Valor atualiza corretamente ao acertar ou errar
-- Atingir 10 dispara o evento de vitória
-- Atingir 0 dispara o game over
+- O valor de Credibilidade é sempre limitado ao intervalo 0..10: após qualquer modificação aplicar `max(0, min(10, novoValor))`
+- Atingir 10 dispara o evento de vitória (verificar com o valor já limitado para evitar duplo disparo)
+- Atingir 0 dispara o game over (verificar com o valor já limitado para evitar duplo disparo)
 
 ---
 
@@ -314,4 +316,4 @@ Efeito sonoro reproduzido no momento em que a Pluma é coletada.
 
 ---
 
-*Total: 24 tarefas | `sprite`: 11 · `código`: 17 · `som`: 4*
+*Total: 24 tarefas | `sprite`: 12 · `código`: 14 · `som`: 3*
