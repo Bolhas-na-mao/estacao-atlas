@@ -30,6 +30,9 @@ archives:
       - goos: windows
         formats: ["zip"]
 
+release:
+  draft: true
+
 changelog:
   sort: asc
   filters:

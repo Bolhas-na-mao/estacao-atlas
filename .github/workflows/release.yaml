@@ -62,3 +62,12 @@ jobs:
         run: gh release upload ${{ github.ref_name }} estacao-atlas_${{ github.ref_name }}_darwin_amd64.tar.gz estacao-atlas_${{ github.ref_name }}_darwin_arm64.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish:
+    needs: release_mac
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish release
+        run: gh release edit ${{ github.ref_name }} --draft=false --repo ${{ github.repository }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
