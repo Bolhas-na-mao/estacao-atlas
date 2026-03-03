@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  release_linux:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -36,8 +36,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  darwin:
-    needs: release
+  release_mac:
+    needs: release_linux
     runs-on: macos-latest
     steps:
       - name: Checkout
