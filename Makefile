@@ -16,6 +16,10 @@ clean:
 	rm -rf dist/
 
 release:
-	@test -n "$(v)" || (echo "Usage: make release v=0.1.0"; exit 1)
-	git tag v$(v)
+	@test -n "$(v)" || (echo "Usage: make release v=0.1.0 [m=\"release message\"]"; exit 1)
+	@if [ -n "$(m)" ]; then \
+		git tag -a v$(v) -m "$(m)"; \
+	else \
+		git tag v$(v); \
+	fi
 	git push origin v$(v)
