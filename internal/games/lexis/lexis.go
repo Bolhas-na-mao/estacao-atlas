@@ -30,38 +30,12 @@ type LexisGame struct {
 }
 
 func New() *LexisGame {
-	idleSpritesheet, err := ui.RenderAsset(assets, "assets/hero/hero_idle.png")
+	heroSheet, err := ui.RenderAsset(assets, "assets/characters/hero.png")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	walkingSpritesheets := make(map[Direction]*ebiten.Image)
-
-	southWalk, err := ui.RenderAsset(assets, "assets/hero/hero_walking_south.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	walkingSpritesheets[South] = southWalk
-
-	northWalk, err := ui.RenderAsset(assets, "assets/hero/hero_walking_north.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	walkingSpritesheets[North] = northWalk
-
-	eastWalk, err := ui.RenderAsset(assets, "assets/hero/hero_walking_east.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	walkingSpritesheets[East] = eastWalk
-
-	westWalk, err := ui.RenderAsset(assets, "assets/hero/hero_walking_west.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	walkingSpritesheets[West] = westWalk
-
-	hero := newPlayer(idleSpritesheet, walkingSpritesheets, South, "Hero", 100, 100)
+	hero := newPlayer(heroSheet, South, "Hero", 100, 100)
 
 	return &LexisGame{hero: hero}
 }
