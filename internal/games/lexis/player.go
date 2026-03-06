@@ -1,7 +1,6 @@
 package lexis
 
 import (
-	"image"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -17,47 +16,28 @@ const (
 )
 
 const (
-	spriteSize      = 48
-	animationFrames = 4
-	animationSpeed  = 8
-	moveSpeed       = 3.0
+	walkFrames     = 3
+	animationSpeed = 8
+	moveSpeed      = 3.0
 )
 
 type Player struct {
-	idleSprites    map[Direction]*ebiten.Image
-	walkingSprites map[Direction][]*ebiten.Image
-	currDir        Direction
-	name           string
-	x, y           float64
-	isWalking      bool
-	animFrame      int
-	animTick       int
+	sprite    *characterSprite
+	currDir   Direction
+	name      string
+	x, y      float64
+	isWalking bool
+	animFrame int
+	animTick  int
 }
 
-func newPlayer(idleSpritesheet *ebiten.Image, walkingSpritesheets map[Direction]*ebiten.Image, startDir Direction, name string, x, y float64) *Player {
-	idleSprites := map[Direction]*ebiten.Image{
-		South: idleSpritesheet.SubImage(image.Rect(0, 0, spriteSize, spriteSize)).(*ebiten.Image),
-		East:  idleSpritesheet.SubImage(image.Rect(spriteSize, 0, spriteSize*2, spriteSize)).(*ebiten.Image),
-		North: idleSpritesheet.SubImage(image.Rect(spriteSize*2, 0, spriteSize*3, spriteSize)).(*ebiten.Image),
-		West:  idleSpritesheet.SubImage(image.Rect(spriteSize*3, 0, spriteSize*4, spriteSize)).(*ebiten.Image),
-	}
-
-	walkingSprites := make(map[Direction][]*ebiten.Image)
-	for dir, sheet := range walkingSpritesheets {
-		frames := make([]*ebiten.Image, animationFrames)
-		for i := 0; i < animationFrames; i++ {
-			frames[i] = sheet.SubImage(image.Rect(i*spriteSize, 0, (i+1)*spriteSize, spriteSize)).(*ebiten.Image)
-		}
-		walkingSprites[dir] = frames
-	}
-
+func newPlayer(sheet *ebiten.Image, startDir Direction, name string, x, y float64) *Player {
 	return &Player{
-		idleSprites:    idleSprites,
-		walkingSprites: walkingSprites,
-		currDir:        startDir,
-		name:           name,
-		x:              x,
-		y:              y,
+		sprite:  newCharacterSprite(sheet),
+		currDir: startDir,
+		name:    name,
+		x:       x,
+		y:       y,
 	}
 }
 
@@ -87,7 +67,7 @@ func (p *Player) update() {
 		p.animTick++
 		if p.animTick >= animationSpeed {
 			p.animTick = 0
-			p.animFrame = (p.animFrame + 1) % animationFrames
+			p.animFrame = (p.animFrame + 1) % walkFrames
 		}
 	} else {
 		p.animFrame = 0
@@ -96,8 +76,5 @@ func (p *Player) update() {
 }
 
 func (p *Player) currentImage() *ebiten.Image {
-	if p.isWalking {
-		return p.walkingSprites[p.currDir][p.animFrame]
-	}
-	return p.idleSprites[p.currDir]
+	return p.sprite.frame(p.currDir, p.isWalking, p.animFrame)
 }
