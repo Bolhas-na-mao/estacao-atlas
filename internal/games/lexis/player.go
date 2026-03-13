@@ -18,7 +18,7 @@ const (
 const (
 	walkFrames     = 3
 	animationSpeed = 8
-	moveSpeed      = 1.5
+	moveSpeed      = 1.7
 )
 
 type Player struct {
