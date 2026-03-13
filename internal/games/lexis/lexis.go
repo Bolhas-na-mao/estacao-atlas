@@ -12,7 +12,7 @@ import (
 //go:embed assets/*
 var assets embed.FS
 
-const heroScale = 2.0
+const heroScale = 2.5
 
 func init() {
 	games.Register(games.GameInfo{
