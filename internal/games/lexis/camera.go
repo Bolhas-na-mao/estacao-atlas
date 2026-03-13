@@ -55,7 +55,6 @@ func (c *Camera) update(heroCenterX, heroCenterY float64, roomW, roomH int) {
 	c.y += (c.targetY - c.y) * cameraLerp
 }
 
-// immediately centers the camera on the hero and clamps to the room, with no lerp (for room transitions.)
 func (c *Camera) snapTo(heroCenterX, heroCenterY float64, roomW, roomH int) {
 	vw := viewW()
 	vh := viewH()
