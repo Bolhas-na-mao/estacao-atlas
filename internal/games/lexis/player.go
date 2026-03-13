@@ -18,7 +18,7 @@ const (
 const (
 	walkFrames     = 3
 	animationSpeed = 8
-	moveSpeed      = 3.0
+	moveSpeed      = 1.5
 )
 
 type Player struct {
@@ -41,7 +41,7 @@ func newPlayer(sheet *ebiten.Image, startDir Direction, name string, x, y float6
 	}
 }
 
-func (p *Player) move(dx, dy float64) {
+func (p *Player) move(dx, dy float64, isSolid func(x, y float64) bool) {
 	if dx == 0 && dy == 0 {
 		return
 	}
@@ -57,9 +57,29 @@ func (p *Player) move(dx, dy float64) {
 	}
 
 	length := math.Sqrt(dx*dx + dy*dy)
-	p.x += (dx / length) * moveSpeed
-	p.y += (dy / length) * moveSpeed
+	vx := (dx / length) * moveSpeed
+	vy := (dy / length) * moveSpeed
+
+	if newX := p.x + vx; !p.hitsSolid(newX, p.y, isSolid) {
+		p.x = newX
+	}
+	if newY := p.y + vy; !p.hitsSolid(p.x, newY, isSolid) {
+		p.y = newY
+	}
+
 	p.isWalking = true
+}
+
+func (p *Player) hitsSolid(x, y float64, isSolid func(float64, float64) bool) bool {
+	w := float64(spriteSize)
+	margin := w / 5
+	left := x + margin
+	right := x + w - margin
+	top := y + w/2
+	bottom := y + w - 2
+
+	return isSolid(left, top) || isSolid(right, top) ||
+		isSolid(left, bottom) || isSolid(right, bottom)
 }
 
 func (p *Player) update() {
