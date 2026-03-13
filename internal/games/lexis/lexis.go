@@ -2,7 +2,6 @@ package lexis
 
 import (
 	"embed"
-	"image/color"
 	"log"
 
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/games"
@@ -13,7 +12,7 @@ import (
 //go:embed assets/*
 var assets embed.FS
 
-const heroScale = 3.0
+const heroScale = 2.5
 
 func init() {
 	games.Register(games.GameInfo{
@@ -26,7 +25,9 @@ func init() {
 }
 
 type LexisGame struct {
-	hero *Player
+	hero     *Player
+	worldMap *WorldMap
+	camera   *Camera
 }
 
 func New() *LexisGame {
@@ -34,10 +35,29 @@ func New() *LexisGame {
 	if err != nil {
 		log.Fatal(err)
 	}
+	wallSheet, err := ui.RenderAsset(assets, "assets/tilesets/library_wall_tileset.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	floorSheet, err := ui.RenderAsset(assets, "assets/tilesets/library_floor_tileset.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	project, err := parseLdtk(assets, "assets/lexis.ldtk")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	hero := newPlayer(heroSheet, South, "Hero", 100, 100)
+	worldMap := newWorldMap(project, wallSheet, floorSheet)
 
-	return &LexisGame{hero: hero}
+	hero := newPlayer(heroSheet, South, "Hero", 100, 160)
+
+	room0 := worldMap.current()
+	heroCenterX := hero.x + float64(spriteSize)/2
+	heroCenterY := hero.y + float64(spriteSize)/2
+	camera := newCamera(heroCenterX, heroCenterY, room0.width, room0.height)
+
+	return &LexisGame{hero: hero, worldMap: worldMap, camera: camera}
 }
 
 func (g *LexisGame) Update() error {
@@ -56,7 +76,17 @@ func (g *LexisGame) Update() error {
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
 		dx++
 	}
-	g.hero.move(dx, dy)
+
+	g.hero.move(dx, dy, g.worldMap.current().isSolid)
+
+	room := g.worldMap.current()
+	g.hero.x = clamp(g.hero.x, 0, float64(room.width-spriteSize))
+	g.hero.y = clamp(g.hero.y, 0, float64(room.height-spriteSize))
+
+	heroCenterX := g.hero.x + float64(spriteSize)/2
+	heroCenterY := g.hero.y + float64(spriteSize)/2
+	cur := g.worldMap.current()
+	g.camera.update(heroCenterX, heroCenterY, cur.width, cur.height)
 
 	g.hero.update()
 
@@ -64,11 +94,13 @@ func (g *LexisGame) Update() error {
 }
 
 func (g *LexisGame) Draw(screen *ebiten.Image) {
-	screen.Fill(color.RGBA{0, 0, 0, 255})
+	g.worldMap.draw(screen, g.camera)
 
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(heroScale, heroScale)
-	op.GeoM.Translate(g.hero.x, g.hero.y)
-
+	op.GeoM.Translate(
+		(g.hero.x-g.camera.x)*heroScale,
+		(g.hero.y-g.camera.y)*heroScale,
+	)
 	screen.DrawImage(g.hero.currentImage(), op)
 }
