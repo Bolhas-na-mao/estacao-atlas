@@ -12,7 +12,11 @@ import (
 //go:embed assets/*
 var assets embed.FS
 
-const heroScale = 2.5
+const (
+	heroScale = 2.5
+	screenW   = 1280
+	screenH   = 720
+)
 
 func init() {
 	games.Register(games.GameInfo{
@@ -50,12 +54,12 @@ func New() *LexisGame {
 
 	worldMap := newWorldMap(project, wallSheet, floorSheet)
 
-	hero := newPlayer(heroSheet, South, "Hero", 100, 160)
+	hero := newPlayer(heroSheet, South, 100, 160)
 
 	room0 := worldMap.current()
 	heroCenterX := hero.x + float64(spriteSize)/2
 	heroCenterY := hero.y + float64(spriteSize)/2
-	camera := newCamera(heroCenterX, heroCenterY, room0.width, room0.height)
+	camera := newCamera(heroCenterX, heroCenterY, room0.width, room0.height, screenW, screenH)
 
 	return &LexisGame{hero: hero, worldMap: worldMap, camera: camera}
 }
