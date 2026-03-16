@@ -28,13 +28,13 @@ func newRoom(level ldtkLevel, wallSheet, floorSheet *ebiten.Image) *Room {
 	}
 	img := ebiten.NewImage(level.PxWid, level.PxHei)
 
-	for _, layer := range level.LayerInstances {
-		if layer.Identifier == "Library_Floor" {
-			renderTiles(img, layer.GridTiles, floorSheet)
-		}
-	}
+	var wallTiles []ldtkTile
 	for _, layer := range level.LayerInstances {
 		switch layer.Identifier {
+		case "Library_Floor":
+			renderTiles(img, layer.GridTiles, floorSheet)
+		case "Library_Wall":
+			wallTiles = layer.GridTiles
 		case "Collisions":
 			for _, e := range layer.EntityInstances {
 				if e.Identifier == "WallCollider" {
@@ -46,10 +46,9 @@ func newRoom(level ldtkLevel, wallSheet, floorSheet *ebiten.Image) *Room {
 					})
 				}
 			}
-		case "Library_Wall":
-			renderTiles(img, layer.GridTiles, wallSheet)
 		}
 	}
+	renderTiles(img, wallTiles, wallSheet)
 
 	r.img = img
 	return r

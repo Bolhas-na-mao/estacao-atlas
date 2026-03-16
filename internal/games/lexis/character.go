@@ -8,19 +8,19 @@ import (
 
 const spriteSize = 32
 
-var dirOffset = map[Direction]int{
-	South: 0,
-	North: 4,
-	East:  8,
-	West:  12,
-}
-
 type characterSprite struct {
 	idle    map[Direction]*ebiten.Image
 	walking map[Direction][]*ebiten.Image
 }
 
 func newCharacterSprite(sheet *ebiten.Image) *characterSprite {
+	dirOffset := map[Direction]int{
+		South: 0,
+		North: 4,
+		East:  8,
+		West:  12,
+	}
+
 	idle := make(map[Direction]*ebiten.Image, 4)
 	walking := make(map[Direction][]*ebiten.Image, 4)
 

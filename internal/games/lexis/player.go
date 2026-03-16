@@ -24,18 +24,16 @@ const (
 type Player struct {
 	sprite    *characterSprite
 	currDir   Direction
-	name      string
 	x, y      float64
 	isWalking bool
 	animFrame int
 	animTick  int
 }
 
-func newPlayer(sheet *ebiten.Image, startDir Direction, name string, x, y float64) *Player {
+func newPlayer(sheet *ebiten.Image, startDir Direction, x, y float64) *Player {
 	return &Player{
 		sprite:  newCharacterSprite(sheet),
 		currDir: startDir,
-		name:    name,
 		x:       x,
 		y:       y,
 	}
