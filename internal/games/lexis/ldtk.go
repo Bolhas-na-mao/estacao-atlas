@@ -11,9 +11,7 @@ type ldtkProject struct {
 }
 
 type ldtkLevel struct {
-	Identifier     string              `json:"identifier"`
 	WorldX         int                 `json:"worldX"`
-	WorldY         int                 `json:"worldY"`
 	PxWid          int                 `json:"pxWid"`
 	PxHei          int                 `json:"pxHei"`
 	LayerInstances []ldtkLayerInstance `json:"layerInstances"`
@@ -21,8 +19,6 @@ type ldtkLevel struct {
 
 type ldtkLayerInstance struct {
 	Identifier      string       `json:"__identifier"`
-	Type            string       `json:"__type"`
-	GridSize        int          `json:"__gridSize"`
 	GridTiles       []ldtkTile   `json:"gridTiles"`
 	EntityInstances []ldtkEntity `json:"entityInstances"`
 }
