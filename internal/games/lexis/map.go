@@ -21,20 +21,22 @@ type Room struct {
 	img       *ebiten.Image
 }
 
-func newRoom(level ldtkLevel, wallSheet, floorSheet *ebiten.Image) *Room {
+func newRoom(level ldtkLevel, wallSheet, floorSheet, bookshelfSheet *ebiten.Image) *Room {
 	r := &Room{
 		width:  level.PxWid,
 		height: level.PxHei,
 	}
 	img := ebiten.NewImage(level.PxWid, level.PxHei)
 
-	var wallTiles []ldtkTile
+	var wallTiles, bookshelfTiles []ldtkTile
 	for _, layer := range level.LayerInstances {
 		switch layer.Identifier {
 		case "Library_Floor":
-			renderTiles(img, layer.GridTiles, floorSheet)
+			renderTiles(img, layer.GridTiles, floorSheet, 0)
 		case "Library_Wall":
 			wallTiles = layer.GridTiles
+		case "Bookshelf":
+			bookshelfTiles = layer.GridTiles
 		case "Collisions":
 			for _, e := range layer.EntityInstances {
 				if e.Identifier == "WallCollider" {
@@ -48,13 +50,14 @@ func newRoom(level ldtkLevel, wallSheet, floorSheet *ebiten.Image) *Room {
 			}
 		}
 	}
-	renderTiles(img, wallTiles, wallSheet)
+	renderTiles(img, wallTiles, wallSheet, 0)
+	renderTiles(img, bookshelfTiles, bookshelfSheet, -tileSize)
 
 	r.img = img
 	return r
 }
 
-func renderTiles(dst *ebiten.Image, tiles []ldtkTile, sheet *ebiten.Image) {
+func renderTiles(dst *ebiten.Image, tiles []ldtkTile, sheet *ebiten.Image, yOffset int) {
 	for _, t := range tiles {
 		sx, sy := t.Src[0], t.Src[1]
 		src := sheet.SubImage(image.Rect(sx, sy, sx+tileSize, sy+tileSize)).(*ebiten.Image)
@@ -68,7 +71,7 @@ func renderTiles(dst *ebiten.Image, tiles []ldtkTile, sheet *ebiten.Image) {
 			op.GeoM.Scale(1, -1)
 			op.GeoM.Translate(0, tileSize)
 		}
-		op.GeoM.Translate(float64(t.Px[0]), float64(t.Px[1]))
+		op.GeoM.Translate(float64(t.Px[0]), float64(t.Px[1]+yOffset))
 		dst.DrawImage(src, op)
 	}
 }
@@ -87,7 +90,7 @@ type WorldMap struct {
 	currentIdx int
 }
 
-func newWorldMap(project *ldtkProject, wallSheet, floorSheet *ebiten.Image) *WorldMap {
+func newWorldMap(project *ldtkProject, wallSheet, floorSheet, bookshelfSheet *ebiten.Image) *WorldMap {
 	levels := make([]ldtkLevel, len(project.Levels))
 	copy(levels, project.Levels)
 	sort.Slice(levels, func(i, j int) bool {
@@ -96,7 +99,7 @@ func newWorldMap(project *ldtkProject, wallSheet, floorSheet *ebiten.Image) *Wor
 
 	rooms := make([]*Room, len(levels))
 	for i, level := range levels {
-		rooms[i] = newRoom(level, wallSheet, floorSheet)
+		rooms[i] = newRoom(level, wallSheet, floorSheet, bookshelfSheet)
 	}
 	return &WorldMap{rooms: rooms}
 }

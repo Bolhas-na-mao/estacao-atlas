@@ -47,12 +47,16 @@ func New() *LexisGame {
 	if err != nil {
 		log.Fatal(err)
 	}
+	bookshelfSheet, err := ui.RenderAsset(assets, "assets/tilesets/bookshelf.png")
+	if err != nil {
+		log.Fatal(err)
+	}
 	project, err := parseLdtk(assets, "assets/lexis.ldtk")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	worldMap := newWorldMap(project, wallSheet, floorSheet)
+	worldMap := newWorldMap(project, wallSheet, floorSheet, bookshelfSheet)
 
 	hero := newPlayer(heroSheet, South, 100, 160)
 
