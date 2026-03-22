@@ -7,7 +7,18 @@ import (
 )
 
 type ldtkProject struct {
+	Defs   ldtkDefs    `json:"defs"`
 	Levels []ldtkLevel `json:"levels"`
+}
+
+type ldtkDefs struct {
+	Tilesets []ldtkTilesetDef `json:"tilesets"`
+}
+
+type ldtkTilesetDef struct {
+	Uid          int    `json:"uid"`
+	RelPath      string `json:"relPath"`
+	TileGridSize int    `json:"tileGridSize"`
 }
 
 type ldtkLevel struct {
@@ -19,6 +30,9 @@ type ldtkLevel struct {
 
 type ldtkLayerInstance struct {
 	Identifier      string       `json:"__identifier"`
+	Type            string       `json:"__type"`
+	GridSize        int          `json:"__gridSize"`
+	TilesetDefUid   *int         `json:"__tilesetDefUid"`
 	GridTiles       []ldtkTile   `json:"gridTiles"`
 	EntityInstances []ldtkEntity `json:"entityInstances"`
 }

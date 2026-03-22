@@ -1,10 +1,14 @@
 package lexis
 
 import (
+	"embed"
 	"image"
+	"log"
 	"math"
+	"path"
 	"sort"
 
+	"github.com/Bolhas-na-mao/estacao-atlas/internal/ui"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -21,57 +25,60 @@ type Room struct {
 	img       *ebiten.Image
 }
 
-func newRoom(level ldtkLevel, wallSheet, floorSheet, bookshelfSheet *ebiten.Image) *Room {
+func newRoom(level ldtkLevel, sheets map[int]*ebiten.Image) *Room {
 	r := &Room{
 		width:  level.PxWid,
 		height: level.PxHei,
 	}
 	img := ebiten.NewImage(level.PxWid, level.PxHei)
 
-	var wallTiles, bookshelfTiles []ldtkTile
 	for _, layer := range level.LayerInstances {
-		switch layer.Identifier {
-		case "Library_Floor":
-			renderTiles(img, layer.GridTiles, floorSheet, 0)
-		case "Library_Wall":
-			wallTiles = layer.GridTiles
-		case "Bookshelf":
-			bookshelfTiles = layer.GridTiles
-		case "Collisions":
-			for _, e := range layer.EntityInstances {
-				if e.Identifier == "WallCollider" {
-					r.colliders = append(r.colliders, collider{
-						x: float64(e.Px[0]),
-						y: float64(e.Px[1]),
-						w: float64(e.Width),
-						h: float64(e.Height),
-					})
-				}
+		if layer.Type != "Entities" {
+			continue
+		}
+		for _, e := range layer.EntityInstances {
+			if e.Identifier == "WallCollider" {
+				r.colliders = append(r.colliders, collider{
+					x: float64(e.Px[0]),
+					y: float64(e.Px[1]),
+					w: float64(e.Width),
+					h: float64(e.Height),
+				})
 			}
 		}
 	}
-	renderTiles(img, wallTiles, wallSheet, 0)
-	renderTiles(img, bookshelfTiles, bookshelfSheet, -tileSize)
+
+	for i := len(level.LayerInstances) - 1; i >= 0; i-- {
+		layer := level.LayerInstances[i]
+		if layer.TilesetDefUid == nil {
+			continue
+		}
+		sheet, ok := sheets[*layer.TilesetDefUid]
+		if !ok {
+			continue
+		}
+		renderTiles(img, layer.GridTiles, sheet, layer.GridSize)
+	}
 
 	r.img = img
 	return r
 }
 
-func renderTiles(dst *ebiten.Image, tiles []ldtkTile, sheet *ebiten.Image, yOffset int) {
+func renderTiles(dst *ebiten.Image, tiles []ldtkTile, sheet *ebiten.Image, gridSize int) {
 	for _, t := range tiles {
 		sx, sy := t.Src[0], t.Src[1]
-		src := sheet.SubImage(image.Rect(sx, sy, sx+tileSize, sy+tileSize)).(*ebiten.Image)
+		src := sheet.SubImage(image.Rect(sx, sy, sx+gridSize, sy+gridSize)).(*ebiten.Image)
 
 		op := &ebiten.DrawImageOptions{}
 		if t.F&1 != 0 {
 			op.GeoM.Scale(-1, 1)
-			op.GeoM.Translate(tileSize, 0)
+			op.GeoM.Translate(float64(gridSize), 0)
 		}
 		if t.F&2 != 0 {
 			op.GeoM.Scale(1, -1)
-			op.GeoM.Translate(0, tileSize)
+			op.GeoM.Translate(0, float64(gridSize))
 		}
-		op.GeoM.Translate(float64(t.Px[0]), float64(t.Px[1]+yOffset))
+		op.GeoM.Translate(float64(t.Px[0]), float64(t.Px[1]))
 		dst.DrawImage(src, op)
 	}
 }
@@ -90,7 +97,17 @@ type WorldMap struct {
 	currentIdx int
 }
 
-func newWorldMap(project *ldtkProject, wallSheet, floorSheet, bookshelfSheet *ebiten.Image) *WorldMap {
+func newWorldMap(project *ldtkProject, fs embed.FS) *WorldMap {
+	sheets := make(map[int]*ebiten.Image)
+	for _, ts := range project.Defs.Tilesets {
+		filename := path.Base(ts.RelPath)
+		img, err := ui.RenderAsset(fs, "assets/tilesets/"+filename)
+		if err != nil {
+			log.Fatalf("loading tileset %s: %v", filename, err)
+		}
+		sheets[ts.Uid] = img
+	}
+
 	levels := make([]ldtkLevel, len(project.Levels))
 	copy(levels, project.Levels)
 	sort.Slice(levels, func(i, j int) bool {
@@ -99,7 +116,7 @@ func newWorldMap(project *ldtkProject, wallSheet, floorSheet, bookshelfSheet *eb
 
 	rooms := make([]*Room, len(levels))
 	for i, level := range levels {
-		rooms[i] = newRoom(level, wallSheet, floorSheet, bookshelfSheet)
+		rooms[i] = newRoom(level, sheets)
 	}
 	return &WorldMap{rooms: rooms}
 }
