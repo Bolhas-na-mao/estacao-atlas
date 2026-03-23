@@ -3,11 +3,11 @@ package lexis
 import (
 	"embed"
 	"image"
-	"log"
 	"math"
 	"path"
 	"sort"
 
+	"github.com/Bolhas-na-mao/estacao-atlas/internal/logger"
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/ui"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -55,6 +55,11 @@ func newRoom(level ldtkLevel, sheets map[int]*ebiten.Image) *Room {
 		}
 		sheet, ok := sheets[*layer.TilesetDefUid]
 		if !ok {
+			logger.Warn("tileset not loaded, skipping layer",
+				"tilesetDefUid", *layer.TilesetDefUid,
+				"layer", layer.Identifier,
+				"layerIndex", i,
+			)
 			continue
 		}
 		renderTiles(img, layer.GridTiles, sheet, layer.GridSize)
@@ -103,10 +108,12 @@ func newWorldMap(project *ldtkProject, fs embed.FS) *WorldMap {
 		filename := path.Base(ts.RelPath)
 		img, err := ui.RenderAsset(fs, "assets/tilesets/"+filename)
 		if err != nil {
-			log.Fatalf("loading tileset %s: %v", filename, err)
+			logger.Fatal("loading tileset failed", "file", filename, "err", err)
 		}
 		sheets[ts.Uid] = img
 	}
+
+	logger.Info("world map loading", "tilesets", len(sheets))
 
 	levels := make([]ldtkLevel, len(project.Levels))
 	copy(levels, project.Levels)
@@ -118,6 +125,8 @@ func newWorldMap(project *ldtkProject, fs embed.FS) *WorldMap {
 	for i, level := range levels {
 		rooms[i] = newRoom(level, sheets)
 	}
+
+	logger.Info("world map ready", "rooms", len(rooms))
 	return &WorldMap{rooms: rooms}
 }
 

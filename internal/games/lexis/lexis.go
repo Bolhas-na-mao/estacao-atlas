@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/games"
+	"github.com/Bolhas-na-mao/estacao-atlas/internal/logger"
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/ui"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -35,6 +36,7 @@ type LexisGame struct {
 }
 
 func New() *LexisGame {
+	logger.Info("starting Lexis")
 	heroSheet, err := ui.RenderAsset(assets, "assets/characters/hero.png")
 	if err != nil {
 		log.Fatal(err)
