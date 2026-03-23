@@ -2,7 +2,6 @@ package lexis
 
 import (
 	"embed"
-	"log"
 
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/games"
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/logger"
@@ -39,11 +38,11 @@ func New() *LexisGame {
 	logger.Info("starting Lexis")
 	heroSheet, err := ui.RenderAsset(assets, "assets/characters/hero.png")
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal("loading hero sheet", "err", err)
 	}
 	project, err := parseLdtk(assets, "assets/lexis.ldtk")
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal("loading ldtk project", "err", err)
 	}
 
 	worldMap := newWorldMap(project, assets)
