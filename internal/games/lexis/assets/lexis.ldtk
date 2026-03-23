@@ -270,7 +270,7 @@
 			"enumTags": [],
 			"customData": [ { "tileId": 0, "data": "center" }, { "tileId": 1, "data": "right" }, { "tileId": 2, "data": "left" } ],
 			"savedSelections": [],
-			"cachedPixelData": { "opaqueTiles": "11111111", "averageColors": "f943f943f943f943f844f844f943f943" }
+			"cachedPixelData": { "opaqueTiles": "11111111", "averageColors": "f943f943f943f943f944f844f943f943" }
 		},
 		{
 			"__cWid": 12,
@@ -519,12 +519,12 @@
 							"__smartColor": "#BE4A2F",
 							"iid": "d3a6f3f0-21a0-11f1-abdb-41e59a72f16e",
 							"width": 27,
-							"height": 57,
+							"height": 58,
 							"defUid": 10,
-							"px": [56,227],
+							"px": [56,226],
 							"fieldInstances": [],
 							"__worldX": -72,
-							"__worldY": 131
+							"__worldY": 130
 						},
 						{
 							"__identifier": "WallCollider",
@@ -535,12 +535,12 @@
 							"__smartColor": "#BE4A2F",
 							"iid": "d62142c0-21a0-11f1-abdb-b9d304aac335",
 							"width": 112,
-							"height": 34,
+							"height": 37,
 							"defUid": 10,
-							"px": [56,252],
+							"px": [56,249],
 							"fieldInstances": [],
 							"__worldX": -72,
-							"__worldY": 156
+							"__worldY": 153
 						}
 					]
 				},

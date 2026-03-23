@@ -1,9 +1,9 @@
 package lexis
 
 import (
-	"embed"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 )
 
 type ldtkProject struct {
@@ -50,8 +50,8 @@ type ldtkTile struct {
 	F   int    `json:"f"`
 }
 
-func parseLdtk(fs embed.FS, path string) (*ldtkProject, error) {
-	data, err := fs.ReadFile(path)
+func parseLdtk(fsys fs.FS, path string) (*ldtkProject, error) {
+	data, err := fs.ReadFile(fsys, path)
 	if err != nil {
 		return nil, fmt.Errorf("reading ldtk: %w", err)
 	}
