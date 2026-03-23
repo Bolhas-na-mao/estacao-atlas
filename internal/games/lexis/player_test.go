@@ -1,6 +1,9 @@
 package lexis
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 func TestPlayerHitsSolidNoCollision(t *testing.T) {
 	p := &Player{x: 100, y: 100}
@@ -85,6 +88,11 @@ func TestPlayerMoveDiagonalNormalized(t *testing.T) {
 	if diag.x-100 >= cardinal.x-100 {
 		t.Errorf("diagonal x-component (%.2f) should be less than cardinal (%.2f)",
 			diag.x-100, cardinal.x-100)
+	}
+	diagDist := math.Hypot(diag.x-100, diag.y-100)
+	cardDist := math.Hypot(cardinal.x-100, cardinal.y-100)
+	if math.Abs(diagDist-cardDist) > 1e-6 {
+		t.Errorf("diagonal distance (%.6f) should equal cardinal distance (%.6f)", diagDist, cardDist)
 	}
 }
 
