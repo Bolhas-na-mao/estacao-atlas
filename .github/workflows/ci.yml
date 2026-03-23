@@ -22,10 +22,10 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libasound2-dev libgl1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev libxxf86vm-dev
+          sudo apt-get install -y libasound2-dev libgl1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev libxxf86vm-dev xvfb
 
       - name: Vet
         run: go vet ./...
 
       - name: Test
-        run: go test -v -count=1 ./...
+        run: xvfb-run -a go test -v -count=1 ./...
