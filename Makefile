@@ -1,4 +1,4 @@
-.PHONY: run build test snapshot clean release
+.PHONY: run build test vet ci snapshot clean release
 
 run:
 	go run .
@@ -7,7 +7,12 @@ build:
 	go build ./...
 
 test:
-	go test ./...
+	go test -v ./...
+
+vet:
+	go vet ./...
+
+ci: vet test
 
 snapshot:
 	goreleaser release --snapshot --clean

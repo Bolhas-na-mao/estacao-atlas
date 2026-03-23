@@ -2,9 +2,9 @@ package lexis
 
 import (
 	"embed"
-	"log"
 
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/games"
+	"github.com/Bolhas-na-mao/estacao-atlas/internal/logger"
 	"github.com/Bolhas-na-mao/estacao-atlas/internal/ui"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -35,28 +35,17 @@ type LexisGame struct {
 }
 
 func New() *LexisGame {
+	logger.Info("starting Lexis")
 	heroSheet, err := ui.RenderAsset(assets, "assets/characters/hero.png")
 	if err != nil {
-		log.Fatal(err)
-	}
-	wallSheet, err := ui.RenderAsset(assets, "assets/tilesets/library_wall_tileset.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	floorSheet, err := ui.RenderAsset(assets, "assets/tilesets/library_floor_tileset.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	bookshelfSheet, err := ui.RenderAsset(assets, "assets/tilesets/bookshelf.png")
-	if err != nil {
-		log.Fatal(err)
+		logger.Fatal("loading hero sheet", "err", err)
 	}
 	project, err := parseLdtk(assets, "assets/lexis.ldtk")
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal("loading ldtk project", "err", err)
 	}
 
-	worldMap := newWorldMap(project, wallSheet, floorSheet, bookshelfSheet)
+	worldMap := newWorldMap(project, assets)
 
 	hero := newPlayer(heroSheet, South, 100, 160)
 
