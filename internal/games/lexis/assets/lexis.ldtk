@@ -502,12 +502,12 @@
 							"__tile": null,
 							"__smartColor": "#BE4A2F",
 							"iid": "d5c09c20-21a0-11f1-abdb-b11f856d87f1",
-							"width": 127,
+							"width": 122,
 							"height": 72,
 							"defUid": 10,
-							"px": [33,1],
+							"px": [35,1],
 							"fieldInstances": [],
-							"__worldX": -95,
+							"__worldX": -93,
 							"__worldY": -95
 						},
 						{
